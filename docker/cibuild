@@ -17,5 +17,5 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
     ./docker/build --pull
     docker run --rm \
         --entrypoint scripts/cibuild \
-        stacutils/stactools-package:latest-dev
+        stacutils/stactools-nrcan-landcover:latest-dev
 fi

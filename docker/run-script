@@ -18,7 +18,7 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
     if [ "${1:-}" = "--help" ]; then
         usage
     else
-        docker run --rm -v $(pwd):/opt/stactools-package stactools-package-script-runner "$@"
+        docker run --rm -v $(pwd):/opt/stactools-nrcan-landcover stactools-nrcan-landcover-script-runner "$@"
     fi
     exit
 fi
