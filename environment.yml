@@ -1,4 +1,4 @@
-name: stactools-package
+name: stactools-nrcan-landcover
 channels:
   - conda-forge
   - defaults
