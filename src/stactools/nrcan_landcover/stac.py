@@ -3,6 +3,7 @@ from dateutil.relativedelta import relativedelta
 import pytz
 import json
 import logging
+from pystac.extensions.projection import ProjectionExtension
 from stactools.nrcan_landcover.constants import (LANDCOVER_ID, LANDCOVER_EPSG,
                                                  LANDCOVER_TITLE, DESCRIPTION,
                                                  NRCAN_PROVIDER, LICENSE,
@@ -62,8 +63,8 @@ def create_item(metadata: dict,
         item.common_metadata.start_datetime = start_datetime
         item.common_metadata.end_datetime = end_datetime
 
-    item.ext.enable("projection")
-    item.ext.projection.epsg = LANDCOVER_EPSG
+    item_projection = ProjectionExtension.ext(item, add_if_missing=True)
+    item_projection.epsg = LANDCOVER_EPSG
 
     # Create metadata asset
     item.add_asset(
