@@ -89,6 +89,10 @@ def create_item(metadata: dict,
             ),
         )
 
+    item.set_self_href(metadata_url)
+
+    item.save_object()
+
     return item
 
 
