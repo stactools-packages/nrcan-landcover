@@ -96,7 +96,19 @@ def create_item(metadata: dict,
     return item
 
 
-def create_collection(metadata: dict):
+def create_collection(metadata: dict, metadata_url: str):
+    """Create a STAC Collection using a jsonld file provided by NRCan
+    and save it to a destination.
+
+    The metadata dict may be created using `utils.get_metadata`
+
+    Args:
+        metadata (dict): metadata parsed from jsonld
+        metadata_url (str): Location to save the output STAC Collection json
+
+    Returns:
+        pystac.Collection: pystac collection object
+    """
     # Creates a STAC collection for a Natural Resources Canada Land Cover dataset
 
     title = metadata.get("tiff_metadata").get("dct:title")
@@ -125,5 +137,9 @@ def create_collection(metadata: dict):
         catalog_type=pystac.CatalogType.RELATIVE_PUBLISHED,
     )
     collection.add_link(LICENSE_LINK)
+
+    collection.set_self_href(metadata_url)
+
+    collection.save_object()
 
     return collection

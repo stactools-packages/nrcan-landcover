@@ -12,7 +12,6 @@ logger = logging.getLogger(__name__)
 
 def create_nrcanlandcover_command(cli):
     """Creates the nrcanlandcover command line utility."""
-
     @cli.group(
         "nrcanlandcover",
         short_help=(
@@ -23,63 +22,48 @@ def create_nrcanlandcover_command(cli):
         pass
 
     @nrcanlandcover.command(
-        "create-catalog",
-        short_help="Create a STAC catalog for NRCan 2015 Land Cover of Canada.",
+        "create-collection",
+        short_help="Creates a STAC collection from NRCan Landcover metadata",
     )
-    @click.argument("destination")
     @click.option(
-        "-s",
-        "--source",
-        help="The url to the metadata description.",
+        "-d",
+        "--destination",
+        required=True,
+        help="The output directory for the STAC Collection json",
+    )
+    @click.option(
+        "-m",
+        "--metadata",
+        help="The url to the metadata jsonld",
         default=JSONLD_HREF,
     )
-    def create_catalog_command(destination: str, source: str):
-        """Creates a STAC Catalog from Natural Resources Canada
-        Land Cover metadata files.
+    def create_collection_command(destination: str, metadata: str):
+        """Creates a STAC Collection from NRCan Landcover metadata
 
         Args:
-            destination (str): Path to output STAC catalog.
-            source (str): Path to NRCan provided metadata - Currently only supports JSON-LD.
-
+            destination (str): Directory used to store the collection json
+            metadata (str): Path to a jsonld metadata file - provided by NRCan
         Returns:
             Callable
         """
+        metadata = utils.get_metadata(metadata)
 
-        json_path = source
+        output_path = os.path.join(destination, f'{LANDCOVER_ID}.json')
 
-        metadata = utils.get_metadata(json_path)
-
-        asset_package_path = utils.download_asset_package(metadata)
-
-        tif_path = os.path.join(
-            asset_package_path,
-            [i for i in os.listdir(asset_package_path) if i.endswith(".tif")][0],
-        )
-
-        output_path = destination.replace(".json", "_cog.tif")
-
-        # Create cog asset
-        cog_path = cog.create_cog(tif_path, output_path, dry_run=False)
-
-        # Create stac item
-        item = stac.create_item(metadata, json_path, cog_path, destination)
-        item.collection_id = LANDCOVER_ID
-
-        collection = stac.create_collection(metadata)
-        collection.add_item(item)
-        collection_dir = os.path.dirname(os.path.dirname(destination))
-
-        collection.normalize_hrefs(collection_dir)
-        collection.save()
-        collection.validate()
+        stac.create_collection(metadata, output_path)
 
     @nrcanlandcover.command(
-        "create-cog", short_help="Transform Geotiff to Cloud-Optimized Geotiff.",
+        "create-cog",
+        short_help="Transform Geotiff to Cloud-Optimized Geotiff.",
     )
-    @click.option(
-        "-d", "--destination", required=True, help="The output directory for the COG"
-    )
-    @click.option("-s", "--source", required=True, help="Path to an input GeoTiff")
+    @click.option("-d",
+                  "--destination",
+                  required=True,
+                  help="The output directory for the COG")
+    @click.option("-s",
+                  "--source",
+                  required=True,
+                  help="Path to an input GeoTiff")
     def create_cog_command(destination: str, source: str):
         """Generate a COG from a GeoTiff. The COG will be saved in the desination 
         with `_cog.tif` appended to the name.
@@ -91,14 +75,14 @@ def create_nrcanlandcover_command(cli):
         if not os.path.isdir(destination):
             raise IOError(f'Destination folder "{destination}" not found')
 
-        output_path = os.path.join(
-            destination, os.path.basename(source)[:-4] + "_cog.tif"
-        )
+        output_path = os.path.join(destination,
+                                   os.path.basename(source)[:-4] + "_cog.tif")
 
         cog.create_cog(source, output_path)
 
     @nrcanlandcover.command(
-        "create-item", short_help="Create a STAC item using JSONLD metadata and a COG",
+        "create-item",
+        short_help="Create a STAC item using JSONLD metadata and a COG",
     )
     @click.option(
         "-d",
@@ -123,7 +107,8 @@ def create_nrcanlandcover_command(cli):
         """
         jsonld_metadata = utils.get_metadata(metadata)
 
-        output_path = os.path.join(destination, os.path.basename(cog)[:-4] + '.json')
+        output_path = os.path.join(destination,
+                                   os.path.basename(cog)[:-4] + '.json')
 
         stac.create_item(jsonld_metadata, output_path, cog)
 
