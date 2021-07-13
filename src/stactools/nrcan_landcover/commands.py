@@ -48,7 +48,7 @@ def create_nrcanlandcover_command(cli):
         """
         metadata = utils.get_metadata(metadata)
 
-        output_path = os.path.join(destination, f'{LANDCOVER_ID}.json')
+        output_path = os.path.join(destination, f"{LANDCOVER_ID}.json")
 
         stac.create_collection(metadata, output_path)
 
@@ -65,7 +65,7 @@ def create_nrcanlandcover_command(cli):
                   required=True,
                   help="Path to an input GeoTiff")
     def create_cog_command(destination: str, source: str):
-        """Generate a COG from a GeoTiff. The COG will be saved in the desination 
+        """Generate a COG from a GeoTiff. The COG will be saved in the desination
         with `_cog.tif` appended to the name.
 
         Args:
@@ -108,7 +108,7 @@ def create_nrcanlandcover_command(cli):
         jsonld_metadata = utils.get_metadata(metadata)
 
         output_path = os.path.join(destination,
-                                   os.path.basename(cog)[:-4] + '.json')
+                                   os.path.basename(cog)[:-4] + ".json")
 
         stac.create_item(jsonld_metadata, output_path, cog)
 
