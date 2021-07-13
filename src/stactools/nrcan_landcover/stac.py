@@ -132,7 +132,7 @@ def create_collection(metadata: dict, metadata_url: str):
         providers=[NRCAN_PROVIDER],
         license=LICENSE,
         extent=pystac.Extent(
-            pystac.SpatialExtent(bbox),
+            pystac.SpatialExtent([bbox]),
             pystac.TemporalExtent([start_datetime, end_datetime])),
         catalog_type=pystac.CatalogType.RELATIVE_PUBLISHED,
     )
