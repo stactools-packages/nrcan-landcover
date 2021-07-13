@@ -1,4 +1,4 @@
-from stactools.nrcan_landcover.stac import create_item, create_collection
+from stactools.nrcan_landcover.stac import create_item, create_collection  # noqa: F401
 import stactools.core
 
 stactools.core.use_fsspec()
