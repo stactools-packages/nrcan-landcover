@@ -31,9 +31,9 @@ stac.create_item(metadata, "/path/to/item.json", "/path/to/cog.tif")
 
 ```bash
 # STAC Collection
-nrcanlandcover create-collection -d "/path/to/directory"
+stac nrcanlandcover create-collection -d "/path/to/directory"
 # Create a COG - creates /path/to/local_cog.tif
-nrcanlandcover create-cog -d "/path/to/directory" -s "/path/to/local.tif"
+stac nrcanlandcover create-cog -d "/path/to/directory" -s "/path/to/local.tif"
 # Create a STAC Item - creates /path/to/directory/local_cog.json
-nrcanlandcover create-item -d "/path/to/directory" -c "/path/to/local_cog.tif"
+stac nrcanlandcover create-item -d "/path/to/directory" -c "/path/to/local_cog.tif"
 ```
