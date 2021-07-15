@@ -1,7 +1,6 @@
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import pytz
-import json
 import logging
 from pystac.extensions.projection import ProjectionExtension
 from stactools.nrcan_landcover.constants import (
