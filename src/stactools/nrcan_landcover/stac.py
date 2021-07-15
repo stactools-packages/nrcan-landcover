@@ -4,10 +4,15 @@ import pytz
 import json
 import logging
 from pystac.extensions.projection import ProjectionExtension
-from stactools.nrcan_landcover.constants import (LANDCOVER_ID, LANDCOVER_EPSG,
-                                                 LANDCOVER_TITLE, DESCRIPTION,
-                                                 NRCAN_PROVIDER, LICENSE,
-                                                 LICENSE_LINK)
+from stactools.nrcan_landcover.constants import (
+    LANDCOVER_ID,
+    LANDCOVER_EPSG,
+    LANDCOVER_TITLE,
+    DESCRIPTION,
+    NRCAN_PROVIDER,
+    LICENSE,
+    LICENSE_LINK,
+)
 
 import pystac
 from shapely.geometry import Polygon
@@ -42,7 +47,8 @@ def create_item(metadata: dict,
     end_datetime = end_datetime
 
     id = title.replace(" ", "-")
-    geometry = json.loads(metadata.get("geojson_geom").get("@value"))
+    geometry = metadata["geom_metadata"]
+
     bbox = Polygon(geometry.get("coordinates")[0]).bounds
     properties = {
         "title": title,
@@ -122,8 +128,8 @@ def create_collection(metadata: dict, metadata_url: str):
     start_datetime = dataset_datetime
     end_datetime = end_datetime
 
-    geometry = json.loads(metadata.get("geojson_geom").get("@value"))
-    bbox = Polygon(geometry.get("coordinates")[0]).bounds
+    geometry = metadata["geom_metadata"]
+    bbox = list(Polygon(geometry.get("coordinates")[0]).bounds)
 
     collection = pystac.Collection(
         id=LANDCOVER_ID,
@@ -133,7 +139,8 @@ def create_collection(metadata: dict, metadata_url: str):
         license=LICENSE,
         extent=pystac.Extent(
             pystac.SpatialExtent([bbox]),
-            pystac.TemporalExtent([start_datetime, end_datetime])),
+            pystac.TemporalExtent([start_datetime, end_datetime]),
+        ),
         catalog_type=pystac.CatalogType.RELATIVE_PUBLISHED,
     )
     collection.add_link(LICENSE_LINK)

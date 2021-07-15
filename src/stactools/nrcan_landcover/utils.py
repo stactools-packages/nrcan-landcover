@@ -58,14 +58,20 @@ def get_metadata(metadata_url: str) -> dict:
             i for i in jsonld_response.get("@graph")
             if i.get("dct:format") == "TIFF"
         ][0]
-        geom_metadata = [
-            i for i in jsonld_response.get("@graph")
-            if "locn:geometry" in i.keys()
-        ][0]
-        geojson_geom = [
-            i for i in geom_metadata.get("locn:geometry")
-            if "geo+json" in i.get("@type")
-        ][0]
+
+        geom_obj = next(
+            (x["locn:geometry"] for x in jsonld_response["@graph"]
+             if "locn:geometry" in x.keys()),
+            [],
+        )
+        geom_metadata = next(
+            (json.loads(x["@value"])
+             for x in geom_obj if x["@type"].startswith("http")),
+            None,
+        )
+        if not geom_metadata:
+            raise ValueError("Unable to parse geometry metadata from jsonld")
+
         description_metadata = [
             i for i in jsonld_response.get("@graph")
             if "dct:description" in i.keys()
@@ -74,7 +80,6 @@ def get_metadata(metadata_url: str) -> dict:
         metadata = {
             "tiff_metadata": tiff_metadata,
             "geom_metadata": geom_metadata,
-            "geojson_geom": geojson_geom,
             "description_metadata": description_metadata
         }
 
