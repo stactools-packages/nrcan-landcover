@@ -12,5 +12,4 @@ def register_plugin(registry):
     registry.register_subcommand(commands.create_nrcanlandcover_command)
 
 
-__version__ = '0.2.3'
-"""Library version"""
+__version__ = '0.2.4a1'
