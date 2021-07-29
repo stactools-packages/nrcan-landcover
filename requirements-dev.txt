@@ -11,6 +11,7 @@ sphinx-click
 sphinxcontrib-fulltoc
 sphinxcontrib-napoleon
 types-click
+types-python-dateutil
 types-pytz
 types-requests
 yapf

@@ -10,7 +10,7 @@ from stactools.nrcan_landcover.constants import LANDCOVER_ID, JSONLD_HREF
 logger = logging.getLogger(__name__)
 
 
-def create_nrcanlandcover_command(cli):
+def create_nrcanlandcover_command(cli: click.Group) -> click.Command:
     """Creates the nrcanlandcover command line utility."""
     @cli.group(
         "nrcanlandcover",
@@ -18,7 +18,7 @@ def create_nrcanlandcover_command(cli):
             "Commands for working with Natural Resources Canada Land Cover data"
         ),
     )
-    def nrcanlandcover():
+    def nrcanlandcover() -> None:
         pass
 
     @nrcanlandcover.command(
@@ -37,7 +37,7 @@ def create_nrcanlandcover_command(cli):
         help="The url to the metadata jsonld",
         default=JSONLD_HREF,
     )
-    def create_collection_command(destination: str, metadata: str):
+    def create_collection_command(destination: str, metadata: str) -> None:
         """Creates a STAC Collection from NRCan Landcover metadata
 
         Args:
@@ -46,11 +46,11 @@ def create_nrcanlandcover_command(cli):
         Returns:
             Callable
         """
-        metadata = utils.get_metadata(metadata)
+        metadata_dict = utils.get_metadata(metadata)
 
         output_path = os.path.join(destination, f"{LANDCOVER_ID}.json")
 
-        stac.create_collection(metadata, output_path)
+        stac.create_collection(metadata_dict, output_path)
 
     @nrcanlandcover.command(
         "create-cog",
@@ -64,7 +64,7 @@ def create_nrcanlandcover_command(cli):
                   "--source",
                   required=True,
                   help="Path to an input GeoTiff")
-    def create_cog_command(destination: str, source: str):
+    def create_cog_command(destination: str, source: str) -> None:
         """Generate a COG from a GeoTiff. The COG will be saved in the desination
         with `_cog.tif` appended to the name.
 
@@ -97,7 +97,7 @@ def create_nrcanlandcover_command(cli):
         help="The url to the metadata description.",
         default=JSONLD_HREF,
     )
-    def create_item_command(destination: str, cog: str, metadata: str):
+    def create_item_command(destination: str, cog: str, metadata: str) -> None:
         """Generate a STAC item using the metadata, with an asset url as provided.
 
         Args:

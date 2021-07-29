@@ -1,3 +1,4 @@
+from typing import Any, Dict, Optional
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import pytz
@@ -19,9 +20,9 @@ from shapely.geometry import Polygon
 logger = logging.getLogger(__name__)
 
 
-def create_item(metadata: dict,
+def create_item(metadata: Dict[str, Any],
                 metadata_url: str,
-                cog_href: str = None) -> pystac.Item:
+                cog_href: Optional[str] = None) -> pystac.Item:
     """Creates a STAC item for a Natural Resources Canada Land Cover dataset.
 
     Args:
@@ -32,8 +33,8 @@ def create_item(metadata: dict,
         pystac.Item: STAC Item object.
     """
 
-    title = metadata.get("tiff_metadata").get("dct:title")
-    description = metadata.get("description_metadata").get("dct:description")
+    title = metadata["tiff_metadata"]["dct:title"]
+    description = metadata["description_metadata"]["dct:description"]
 
     utc = pytz.utc
 
@@ -101,7 +102,8 @@ def create_item(metadata: dict,
     return item
 
 
-def create_collection(metadata: dict, metadata_url: str):
+def create_collection(metadata: Dict[str, Any],
+                      metadata_url: str) -> pystac.Collection:
     """Create a STAC Collection using a jsonld file provided by NRCan
     and save it to a destination.
 
@@ -116,16 +118,14 @@ def create_collection(metadata: dict, metadata_url: str):
     """
     # Creates a STAC collection for a Natural Resources Canada Land Cover dataset
 
-    title = metadata.get("tiff_metadata").get("dct:title")
+    title = metadata["tiff_metadata"]["dct:title"]
 
     utc = pytz.utc
     year = title.split(" ")[0]
     dataset_datetime = utc.localize(datetime.strptime(year, "%Y"))
 
+    start_datetime = dataset_datetime  # type: Optional[datetime]
     end_datetime = dataset_datetime + relativedelta(years=5)
-
-    start_datetime = dataset_datetime
-    end_datetime = end_datetime
 
     geometry = metadata["geom_metadata"]
     bbox = list(Polygon(geometry.get("coordinates")[0]).bounds)
@@ -138,7 +138,9 @@ def create_collection(metadata: dict, metadata_url: str):
         license=LICENSE,
         extent=pystac.Extent(
             pystac.SpatialExtent([bbox]),
-            pystac.TemporalExtent([start_datetime, end_datetime]),
+            # mypy insists that a datetime can't be used for Optional[datetime]
+            # The type of the datetimes is overridden above
+            pystac.TemporalExtent([[start_datetime, end_datetime]]),
         ),
         catalog_type=pystac.CatalogType.RELATIVE_PUBLISHED,
     )
