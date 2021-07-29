@@ -4,6 +4,7 @@ import requests
 import shutil
 
 from tempfile import mkdtemp
+from typing import Any, Dict
 from zipfile import ZipFile
 
 
@@ -13,7 +14,7 @@ def _unzip_dir(zip_path: str, unzip_dir: str) -> str:
         return unzip_dir
 
 
-def download_asset_package(metadata: dict) -> str:
+def download_asset_package(metadata: Dict[str, Any]) -> str:
 
     access_url = metadata["tiff_metadata"]["dcat:accessURL"].get("@id")
 
@@ -33,11 +34,11 @@ def download_asset_package(metadata: dict) -> str:
     return asset_package_path
 
 
-def remove_asset_package(dirpath: str):
+def remove_asset_package(dirpath: str) -> None:
     shutil.rmtree(dirpath)
 
 
-def get_metadata(metadata_url: str) -> dict:
+def get_metadata(metadata_url: str) -> Dict[str, Any]:
     """Gets metadata from the various formats published by NRCan.
 
     Args:
@@ -63,7 +64,7 @@ def get_metadata(metadata_url: str) -> dict:
             (x["locn:geometry"] for x in jsonld_response["@graph"]
              if "locn:geometry" in x.keys()),
             [],
-        )
+        )  # type: Any
         geom_metadata = next(
             (json.loads(x["@value"])
              for x in geom_obj if x["@type"].startswith("http")),

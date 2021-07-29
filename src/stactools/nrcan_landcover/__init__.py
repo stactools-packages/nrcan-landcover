@@ -1,13 +1,16 @@
 import stactools.core
+from stactools.cli import Registry
 from stactools.nrcan_landcover.stac import create_collection, create_item
 from stactools.nrcan_landcover.cog import create_cog
 
-__all__ = [create_collection, create_item, create_cog]
+__all__ = [
+    create_collection.__name__, create_item.__name__, create_cog.__name__
+]
 
 stactools.core.use_fsspec()
 
 
-def register_plugin(registry):
+def register_plugin(registry: Registry) -> None:
     from stactools.nrcan_landcover import commands
     registry.register_subcommand(commands.create_nrcanlandcover_command)
 

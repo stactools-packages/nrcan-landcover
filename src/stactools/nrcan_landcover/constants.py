@@ -1,7 +1,7 @@
 # flake8: noqa
 
 from pyproj import CRS
-from pystac import Provider
+from pystac import Provider, ProviderRole
 from pystac import Link
 
 LANDCOVER_ID = "nrcan-landcover"
@@ -19,7 +19,7 @@ DESCRIPTION = """Collection of Land Cover products for Canada as produced by Nat
 
 NRCAN_PROVIDER = Provider(
     name="Natural Resources Canada | Ressources naturelles Canada",
-    roles=["producer", "processor", "host"],
+    roles=[ProviderRole.PRODUCER, ProviderRole.PROCESSOR, ProviderRole.HOST],
     url=
     "https://www.nrcan.gc.ca/maps-tools-publications/satellite-imagery-air-photos/application-development/land-cover/21755"
 )
