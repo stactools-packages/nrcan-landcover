@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
+- STAC proj extension fields to STAC Items
 - Updated with contents of the template repo (a231a37275b0590e759d7114c4d6c7f685453c22)
 
 ### Deprecated
