@@ -3,6 +3,7 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import pytz
 import logging
+import rasterio
 from pystac.extensions.projection import ProjectionExtension
 from stactools.nrcan_landcover.constants import (
     LANDCOVER_ID,
@@ -71,6 +72,10 @@ def create_item(metadata: Dict[str, Any],
 
     item_projection = ProjectionExtension.ext(item, add_if_missing=True)
     item_projection.epsg = LANDCOVER_EPSG
+    with rasterio.open(cog_href) as dataset:
+        item_projection.bbox = dataset.bounds
+        item_projection.transform = list(dataset.transform)
+        item_projection.shape = [dataset.height, dataset.width]
 
     # Create metadata asset
     item.add_asset(

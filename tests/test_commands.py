@@ -51,9 +51,14 @@ class CreateCollectionTest(CliTestCase):
 
     def test_create_item(self):
         with TemporaryDirectory() as tmp_dir:
+            # Select a .tif data file
+            test_path = test_data.get_path("data-files")
+            cog_path = os.path.join(test_path, [
+                d for d in os.listdir(test_path) if d.lower().endswith(".tif")
+            ][0])
+
             result = self.run_command([
-                "nrcanlandcover", "create-item", "-d", tmp_dir, "-c",
-                "mock.tif"
+                "nrcanlandcover", "create-item", "-d", tmp_dir, "-c", cog_path
             ])
             self.assertEqual(result.exit_code,
                              0,
