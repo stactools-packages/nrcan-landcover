@@ -34,9 +34,15 @@ class StacTest(unittest.TestCase):
         with TemporaryDirectory() as tmp_dir:
             metadata = utils.get_metadata(JSONLD_HREF)
 
+            # Select a .tif data file
+            test_path = test_data.get_path("data-files")
+            cog_path = os.path.join(test_path, [
+                d for d in os.listdir(test_path) if d.lower().endswith(".tif")
+            ][0])
+
             # Create stac item
             json_path = os.path.join(tmp_dir, "test.json")
-            stac.create_item(metadata, json_path, "mock.tif")
+            stac.create_item(metadata, json_path, cog_path)
 
             jsons = [p for p in os.listdir(tmp_dir) if p.endswith(".json")]
             self.assertEqual(len(jsons), 1)
