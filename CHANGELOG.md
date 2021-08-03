@@ -20,4 +20,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
-- Nothing.
+- Collection file name is now `collection.json` [#15](https://github.com/stactools-packages/nrcan-landcover/pull/15)
