@@ -5,7 +5,7 @@ import os
 from stactools.nrcan_landcover import stac
 from stactools.nrcan_landcover import cog
 from stactools.nrcan_landcover import utils
-from stactools.nrcan_landcover.constants import LANDCOVER_ID, JSONLD_HREF
+from stactools.nrcan_landcover.constants import JSONLD_HREF
 
 logger = logging.getLogger(__name__)
 
@@ -48,7 +48,7 @@ def create_nrcanlandcover_command(cli: click.Group) -> click.Command:
         """
         metadata_dict = utils.get_metadata(metadata)
 
-        output_path = os.path.join(destination, f"{LANDCOVER_ID}.json")
+        output_path = os.path.join(destination, "collection.json")
 
         stac.create_collection(metadata_dict, output_path)
 
