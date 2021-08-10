@@ -1,7 +1,8 @@
 import stactools.core
 from stactools.cli import Registry
-from stactools.nrcan_landcover.stac import create_collection, create_item
+
 from stactools.nrcan_landcover.cog import create_cog
+from stactools.nrcan_landcover.stac import create_collection, create_item
 
 __all__ = [
     create_collection.__name__, create_item.__name__, create_cog.__name__

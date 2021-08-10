@@ -1,8 +1,7 @@
 # flake8: noqa
 
 from pyproj import CRS
-from pystac import Provider, ProviderRole
-from pystac import Link
+from pystac import Link, Provider, ProviderRole
 
 LANDCOVER_ID = "nrcan-landcover"
 LANDCOVER_EPSG = 3978

@@ -2,10 +2,9 @@ import os.path
 from tempfile import TemporaryDirectory
 
 import pystac
-
-from stactools.nrcan_landcover.commands import create_nrcanlandcover_command
 from stactools.testing import CliTestCase
 
+from stactools.nrcan_landcover.commands import create_nrcanlandcover_command
 from tests import test_data
 
 

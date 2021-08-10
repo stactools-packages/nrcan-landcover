@@ -1,22 +1,18 @@
-from typing import Any, Dict, Optional
-from datetime import datetime
-from dateutil.relativedelta import relativedelta
-import pytz
 import logging
-import rasterio
-from pystac.extensions.projection import ProjectionExtension
-from stactools.nrcan_landcover.constants import (
-    LANDCOVER_ID,
-    LANDCOVER_EPSG,
-    LANDCOVER_TITLE,
-    DESCRIPTION,
-    NRCAN_PROVIDER,
-    LICENSE,
-    LICENSE_LINK,
-)
+from datetime import datetime
+from typing import Any, Dict, Optional
 
 import pystac
+import pytz
+import rasterio
+from dateutil.relativedelta import relativedelta
+from pystac.extensions.projection import ProjectionExtension
 from shapely.geometry import Polygon
+
+from stactools.nrcan_landcover.constants import (DESCRIPTION, LANDCOVER_EPSG,
+                                                 LANDCOVER_ID, LANDCOVER_TITLE,
+                                                 LICENSE, LICENSE_LINK,
+                                                 NRCAN_PROVIDER)
 
 logger = logging.getLogger(__name__)
 
