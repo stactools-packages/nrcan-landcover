@@ -1,12 +1,11 @@
 import os
-from tempfile import TemporaryDirectory
 import unittest
+from tempfile import TemporaryDirectory
 
 import pystac
 
+from stactools.nrcan_landcover import cog, stac, utils
 from stactools.nrcan_landcover.constants import JSONLD_HREF
-from stactools.nrcan_landcover import utils, cog, stac
-
 from tests import test_data
 
 

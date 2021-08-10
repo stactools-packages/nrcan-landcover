@@ -1,10 +1,9 @@
-import click
 import logging
 import os
 
-from stactools.nrcan_landcover import stac
-from stactools.nrcan_landcover import cog
-from stactools.nrcan_landcover import utils
+import click
+
+from stactools.nrcan_landcover import cog, stac, utils
 from stactools.nrcan_landcover.constants import JSONLD_HREF
 
 logger = logging.getLogger(__name__)

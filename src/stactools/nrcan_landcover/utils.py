@@ -1,11 +1,11 @@
 import json
 import os
-import requests
 import shutil
-
 from tempfile import mkdtemp
 from typing import Any, Dict
 from zipfile import ZipFile
+
+import requests
 
 
 def _unzip_dir(zip_path: str, unzip_dir: str) -> str:
