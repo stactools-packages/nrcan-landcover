@@ -1,8 +1,47 @@
 import logging
-
+import os
+from glob import glob
 from subprocess import CalledProcessError, check_output
+from tempfile import TemporaryDirectory
+from zipfile import ZipFile
+
+import requests
+
+from stactools.nrcan_landcover.constants import JSONLD_HREF
+from stactools.nrcan_landcover.utils import get_metadata
 
 logger = logging.getLogger(__name__)
+
+
+def download_create_cog(
+    output_directory: str,
+    metadata_url: str = JSONLD_HREF,
+    raise_on_fail: bool = True,
+    dry_run: bool = False,
+) -> str:
+    if dry_run:
+        logger.info("Would have downloaded TIF, created COG, and written COG")
+        return output_directory
+
+    metadata = get_metadata(JSONLD_HREF)
+    access_url = metadata["tiff_metadata"]["dcat:accessURL"].get("@id")
+    with TemporaryDirectory() as tmp_dir:
+        # Extract filename from url
+        tmp_file = os.path.join(tmp_dir, access_url.split('/').pop())
+
+        resp = requests.get(access_url)
+
+        with open(tmp_file, 'wb') as f:
+            f.write(resp.content)
+        if access_url.endswith(".zip"):
+            with ZipFile(tmp_file, 'r') as zip_ref:
+                zip_ref.extractall(tmp_dir)
+        print(os.listdir(tmp_dir))
+        file_name = glob(f"{tmp_dir}/*.tif").pop()
+        output_file = os.path.join(
+            output_directory,
+            os.path.basename(file_name).replace(".tif", "") + "_cog.tif")
+        return create_cog(file_name, output_file, raise_on_fail, dry_run)
 
 
 def create_cog(
@@ -28,8 +67,7 @@ def create_cog(
     output = None
     try:
         if dry_run:
-            logger.info(
-                "Would have downloaded TIF, created COG, and written COG")
+            logger.info("Would have read TIF, created COG, and written COG")
         else:
             cmd = [
                 "gdal_translate",
