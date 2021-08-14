@@ -81,6 +81,8 @@ def create_cog(
                 "predictor=yes",
                 "-co",
                 "OVERVIEWS=IGNORE_EXISTING",
+                "-a_nodata",
+                "0",
                 input_path,
                 output_path,
             ]
