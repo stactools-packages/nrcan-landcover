@@ -1,5 +1,6 @@
 import logging
 import os
+from typing import Optional
 
 import click
 
@@ -61,9 +62,9 @@ def create_nrcanlandcover_command(cli: click.Group) -> click.Command:
                   help="The output directory for the COG")
     @click.option("-s",
                   "--source",
-                  required=True,
+                  required=False,
                   help="Path to an input GeoTiff")
-    def create_cog_command(destination: str, source: str) -> None:
+    def create_cog_command(destination: str, source: Optional[str]) -> None:
         """Generate a COG from a GeoTiff. The COG will be saved in the desination
         with `_cog.tif` appended to the name.
 
@@ -74,10 +75,14 @@ def create_nrcanlandcover_command(cli: click.Group) -> click.Command:
         if not os.path.isdir(destination):
             raise IOError(f'Destination folder "{destination}" not found')
 
-        output_path = os.path.join(destination,
-                                   os.path.basename(source)[:-4] + "_cog.tif")
+        if source is None:
+            cog.download_create_cog(destination)
 
-        cog.create_cog(source, output_path)
+        else:
+            output_path = os.path.join(
+                destination,
+                os.path.basename(source)[:-4] + "_cog.tif")
+            cog.create_cog(source, output_path)
 
     @nrcanlandcover.command(
         "create-item",
