@@ -2,6 +2,7 @@ import logging
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
+import fsspec
 import pystac
 import pytz
 import rasterio
@@ -102,6 +103,10 @@ def create_item(metadata: Dict[str, Any],
             "summary": summary
         } for value, summary in CLASSIFICATION_VALUES.items()]
         cog_asset_file.values = mapping
+        with fsspec.open(cog_href) as file:
+            size = file.size
+            if size is not None:
+                cog_asset_file.size = size
 
     item.set_self_href(metadata_url)
 
