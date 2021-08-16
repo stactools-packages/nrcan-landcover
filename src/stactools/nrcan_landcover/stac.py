@@ -71,10 +71,11 @@ def create_item(metadata: Dict[str, Any],
 
     item_projection = ProjectionExtension.ext(item, add_if_missing=True)
     item_projection.epsg = LANDCOVER_EPSG
-    with rasterio.open(cog_href) as dataset:
-        item_projection.bbox = dataset.bounds
-        item_projection.transform = list(dataset.transform)
-        item_projection.shape = [dataset.height, dataset.width]
+    if cog_href is not None:
+        with rasterio.open(cog_href) as dataset:
+            item_projection.bbox = dataset.bounds
+            item_projection.transform = list(dataset.transform)
+            item_projection.shape = [dataset.height, dataset.width]
 
     # Create metadata asset
     item.add_asset(
