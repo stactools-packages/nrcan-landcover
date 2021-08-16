@@ -45,3 +45,21 @@ COLOUR_MAP = {
     18: (76, 112, 163, 255),
     19: (255, 249, 255, 255)
 }
+
+CLASSIFICATION_VALUES = {
+    1: "Temperate or sub-polar needleleaf forest",
+    2: "Sub-polar taiga needleleaf forest",
+    5: "Temperate or sub-polar broadleaf deciduous forest",
+    6: "Mixed forest",
+    8: "Temperate or sub-polar shrubland",
+    10: "Temperate or sub-polar grassland",
+    11: "Sub-polar or polar shrubland-lichen-moss",
+    12: "Sub-polar or polar grassland-lichen-moss",
+    13: "Sub-polar or polar barren-lichen-moss",
+    14: "Wetland",
+    15: "Cropland",
+    16: "Barren lands",
+    17: "Urban",
+    18: "Water",
+    19: "Snow and Ice",
+}

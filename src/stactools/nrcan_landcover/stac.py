@@ -1,15 +1,17 @@
 import logging
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 import pystac
 import pytz
 import rasterio
 from dateutil.relativedelta import relativedelta
+from pystac.extensions.file import FileExtension
 from pystac.extensions.projection import ProjectionExtension
 from shapely.geometry import Polygon
 
-from stactools.nrcan_landcover.constants import (DESCRIPTION, LANDCOVER_EPSG,
+from stactools.nrcan_landcover.constants import (CLASSIFICATION_VALUES,
+                                                 DESCRIPTION, LANDCOVER_EPSG,
                                                  LANDCOVER_ID, LANDCOVER_TITLE,
                                                  LICENSE, LICENSE_LINK,
                                                  NRCAN_PROVIDER)
@@ -86,15 +88,20 @@ def create_item(metadata: Dict[str, Any],
 
     if cog_href is not None:
         # Create COG asset if it exists.
-        item.add_asset(
-            "landcover",
-            pystac.Asset(
-                href=cog_href,
-                media_type=pystac.MediaType.COG,
-                roles=["data"],
-                title="Land cover of Canada COGs",
-            ),
+        cog_asset = pystac.Asset(
+            href=cog_href,
+            media_type=pystac.MediaType.COG,
+            roles=["data"],
+            title="Land cover of Canada COGs",
         )
+        item.add_asset("landcover", cog_asset)
+        cog_asset_file = FileExtension.ext(cog_asset, add_if_missing=True)
+        # The following odd type annotation is needed
+        mapping: List[Any] = [{
+            "values": [value],
+            "summary": summary
+        } for value, summary in CLASSIFICATION_VALUES.items()]
+        cog_asset_file.values = mapping
 
     item.set_self_href(metadata_url)
 
