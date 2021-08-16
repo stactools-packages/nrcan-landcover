@@ -1,5 +1,3 @@
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/stactools-packages/nrcan-landcover/main?filepath=docs/installation_and_basic_usage.ipynb)
-
 # stactools nrcan-landcover
 
 Collection of Land Cover products for Canada as produced by Natural Resources Canada using Landsat satellite imagery. This collection of cartographic products offers classified Land Cover of Canada at a 30 metre spatial resolution, updated on a 5 year basis.
