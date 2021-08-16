@@ -26,3 +26,22 @@ NRCAN_PROVIDER = Provider(
 JSONLD_HREF = "https://open.canada.ca/data/en/dataset/4e615eae-b90c-420b-adee-2ca35896caf6.jsonld"
 
 NRCAN_FTP = "http://ftp.maps.canada.ca/pub/nrcan_rncan/Land-cover_Couverture-du-sol/canada-landcover_canada-couverture-du-sol/CanadaLandcover2015.zip"
+
+COLOUR_MAP = {
+    0: (0, 0, 0, 0),
+    1: (0, 61, 0, 255),
+    2: (147, 155, 112, 255),
+    5: (20, 140, 61, 255),
+    6: (91, 117, 43, 255),
+    8: (178, 137, 51, 255),
+    10: (224, 206, 137, 255),
+    11: (155, 117, 137, 255),
+    12: (186, 211, 84, 255),
+    13: (63, 137, 114, 255),
+    14: (107, 163, 137, 255),
+    15: (229, 173, 102, 255),
+    16: (168, 170, 173, 255),
+    17: (219, 33, 38, 155),
+    18: (76, 112, 163, 255),
+    19: (255, 249, 255, 255)
+}

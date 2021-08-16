@@ -5,9 +5,10 @@ from subprocess import CalledProcessError, check_output
 from tempfile import TemporaryDirectory
 from zipfile import ZipFile
 
+import rasterio
 import requests
 
-from stactools.nrcan_landcover.constants import JSONLD_HREF
+from stactools.nrcan_landcover.constants import COLOUR_MAP, JSONLD_HREF
 from stactools.nrcan_landcover.utils import get_metadata
 
 logger = logging.getLogger(__name__)
@@ -94,6 +95,8 @@ def create_cog(
                 raise
             finally:
                 logger.info(f"output: {str(output)}")
+            with rasterio.open(output_path, "r+") as dataset:
+                dataset.write_colormap(1, COLOUR_MAP)
 
     except Exception:
         logger.error("Failed to process {}".format(output_path))
