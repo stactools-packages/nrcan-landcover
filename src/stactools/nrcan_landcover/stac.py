@@ -49,7 +49,7 @@ def create_item(metadata: Dict[str, Any],
     id = title.replace(" ", "-")
     geometry = metadata["geom_metadata"]
 
-    bbox = Polygon(geometry.get("coordinates")[0]).bounds
+    bbox = list(Polygon(geometry.get("coordinates")[0]).bounds)
     properties = {
         "title": title,
         "description": description,
@@ -73,7 +73,7 @@ def create_item(metadata: Dict[str, Any],
     item_projection.epsg = LANDCOVER_EPSG
     if cog_href is not None:
         with rasterio.open(cog_href) as dataset:
-            item_projection.bbox = dataset.bounds
+            item_projection.bbox = list(dataset.bounds)
             item_projection.transform = list(dataset.transform)
             item_projection.shape = [dataset.height, dataset.width]
 
