@@ -8,7 +8,9 @@
 - Owner: @sparkgeo
 - Dataset homepage: [NRCAN](https://www.nrcan.gc.ca/maps-tools-publications/satellite-imagery-air-photos/application-development/land-cover/21755)
 - STAC extensions used:
+  - [file](https://github.com/stac-extensions/file/)
   - [proj](https://github.com/stac-extensions/projection/)
+  - [raster](https://github.com/stac-extensions/raster/)
 
 Collection of Land Cover products for Canada as produced by Natural Resources Canada using Landsat satellite imagery. This collection of cartographic products offers classified Land Cover of Canada at a 30 metre spatial resolution, updated on a 5 year basis.
 
