@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
+- STAC raster extension to STAC Items
+- STAC file extension to STAC Items
 - Colour map on COG
 - Ensure that the no_data value is set properly
 - STAC proj extension fields to STAC Items
