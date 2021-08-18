@@ -49,8 +49,26 @@ class StacTest(unittest.TestCase):
             item_path = os.path.join(tmp_dir, jsons[0])
 
             item = pystac.read_file(item_path)
+        asset = item.assets["landcover"]
 
-        item.validate()
+        # Projection Extension
+        assert "proj:epsg" in item.properties
+        assert "proj:bbox" in item.properties
+        assert "proj:transform" in item.properties
+        assert "proj:shape" in item.properties
+
+        # File Extension
+        assert "file:size" in asset.extra_fields
+        assert "file:values" in asset.extra_fields
+        assert len(asset.extra_fields["file:values"]) > 0
+        assert "raster:bands" in asset.extra_fields
+
+        # Raster Extension
+        assert len(asset.extra_fields["raster:bands"]) == 1
+        assert "nodata" in asset.extra_fields["raster:bands"][0]
+        assert "sampling" in asset.extra_fields["raster:bands"][0]
+        assert "data_type" in asset.extra_fields["raster:bands"][0]
+        assert "spatial_resolution" in asset.extra_fields["raster:bands"][0]
 
     def test_create_collection(self):
         with TemporaryDirectory() as tmp_dir:

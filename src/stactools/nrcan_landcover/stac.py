@@ -9,6 +9,8 @@ import rasterio
 from dateutil.relativedelta import relativedelta
 from pystac.extensions.file import FileExtension
 from pystac.extensions.projection import ProjectionExtension
+from pystac.extensions.raster import (DataType, RasterBand, RasterExtension,
+                                      Sampling)
 from shapely.geometry import Polygon
 
 from stactools.nrcan_landcover.constants import (CLASSIFICATION_VALUES,
@@ -97,6 +99,7 @@ def create_item(metadata: Dict[str, Any],
             title="Land cover of Canada COGs",
         )
         item.add_asset("landcover", cog_asset)
+        # File Extension
         cog_asset_file = FileExtension.ext(cog_asset, add_if_missing=True)
         # The following odd type annotation is needed
         mapping: List[Any] = [{
@@ -108,6 +111,14 @@ def create_item(metadata: Dict[str, Any],
             size = file.size
             if size is not None:
                 cog_asset_file.size = size
+        # Raster Extension
+        cog_asset_raster = RasterExtension.ext(cog_asset, add_if_missing=True)
+        cog_asset_raster.bands = [
+            RasterBand.create(nodata=0,
+                              sampling=Sampling.AREA,
+                              data_type=DataType.UINT8,
+                              spatial_resolution=30)
+        ]
 
     item.set_self_href(metadata_url)
 
