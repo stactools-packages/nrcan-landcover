@@ -122,8 +122,6 @@ def create_item(metadata: Dict[str, Any],
 
     item.set_self_href(metadata_url)
 
-    item.save_object()
-
     return item
 
 
@@ -172,7 +170,5 @@ def create_collection(metadata: Dict[str, Any],
     collection.add_link(LICENSE_LINK)
 
     collection.set_self_href(metadata_url)
-
-    collection.save_object()
 
     return collection
