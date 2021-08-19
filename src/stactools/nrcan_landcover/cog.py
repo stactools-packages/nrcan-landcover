@@ -24,7 +24,7 @@ def download_create_cog(
         logger.info("Would have downloaded TIF, created COG, and written COG")
         return output_directory
 
-    metadata = get_metadata(JSONLD_HREF)
+    metadata = get_metadata(metadata_url)
     access_url = metadata["tiff_metadata"]["dcat:accessURL"].get("@id")
     with TemporaryDirectory() as tmp_dir:
         # Extract filename from url
