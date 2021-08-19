@@ -41,7 +41,8 @@ class StacTest(unittest.TestCase):
 
             # Create stac item
             json_path = os.path.join(tmp_dir, "test.json")
-            stac.create_item(metadata, json_path, cog_path)
+            item = stac.create_item(metadata, json_path, cog_path)
+            item.save_object()
 
             jsons = [p for p in os.listdir(tmp_dir) if p.endswith(".json")]
             self.assertEqual(len(jsons), 1)
@@ -76,7 +77,8 @@ class StacTest(unittest.TestCase):
 
             # Create stac collection
             json_path = os.path.join(tmp_dir, "test.json")
-            stac.create_collection(metadata, json_path)
+            collection = stac.create_collection(metadata, json_path)
+            collection.save_object()
 
             jsons = [p for p in os.listdir(tmp_dir) if p.endswith(".json")]
             self.assertEqual(len(jsons), 1)
