@@ -14,21 +14,21 @@ from pystac.extensions.raster import (DataType, RasterBand, RasterExtension,
 from shapely.geometry import Polygon
 
 from stactools.nrcan_landcover.constants import (CLASSIFICATION_VALUES,
-                                                 DESCRIPTION, LANDCOVER_EPSG,
-                                                 LANDCOVER_ID, LANDCOVER_TITLE,
-                                                 LICENSE, LICENSE_LINK,
-                                                 NRCAN_PROVIDER)
+                                                 DESCRIPTION, JSONLD_HREF,
+                                                 LANDCOVER_EPSG, LANDCOVER_ID,
+                                                 LANDCOVER_TITLE, LICENSE,
+                                                 LICENSE_LINK, NRCAN_PROVIDER)
 
 logger = logging.getLogger(__name__)
 
 
 def create_item(metadata: Dict[str, Any],
-                metadata_url: str,
+                metadata_url: str = JSONLD_HREF,
                 cog_href: Optional[str] = None) -> pystac.Item:
     """Creates a STAC item for a Natural Resources Canada Land Cover dataset.
 
     Args:
-        metadata_url (str): Path to provider metadata.
+        metadata_url (str, optional): Path to provider metadata.
         cog_href (str, optional): Path to COG asset.
 
     Returns:
@@ -123,7 +123,7 @@ def create_item(metadata: Dict[str, Any],
 
 
 def create_collection(metadata: Dict[str, Any],
-                      metadata_url: str) -> pystac.Collection:
+                      metadata_url: str = JSONLD_HREF) -> pystac.Collection:
     """Create a STAC Collection using a jsonld file provided by NRCan
     and save it to a destination.
 
@@ -131,7 +131,7 @@ def create_collection(metadata: Dict[str, Any],
 
     Args:
         metadata (dict): metadata parsed from jsonld
-        metadata_url (str): Location to save the output STAC Collection json
+        metadata_url (str, optional): Location to save the output STAC Collection json
 
     Returns:
         pystac.Collection: pystac collection object
