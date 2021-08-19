@@ -119,9 +119,6 @@ def create_item(metadata: Dict[str, Any],
                               data_type=DataType.UINT8,
                               spatial_resolution=30)
         ]
-
-    item.set_self_href(metadata_url)
-
     return item
 
 
@@ -169,6 +166,15 @@ def create_collection(metadata: Dict[str, Any],
     )
     collection.add_link(LICENSE_LINK)
 
-    collection.set_self_href(metadata_url)
+    # Create metadata asset
+    collection.add_asset(
+        "metadata",
+        pystac.Asset(
+            href=metadata_url,
+            media_type=pystac.MediaType.JSON,
+            roles=["metadata"],
+            title="Land cover of Canada metadata",
+        ),
+    )
 
     return collection

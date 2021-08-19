@@ -48,8 +48,9 @@ def create_nrcanlandcover_command(cli: click.Group) -> click.Command:
         """
         metadata_dict = utils.get_metadata(metadata)
         output_path = os.path.join(destination, "collection.json")
-        collection = stac.create_collection(metadata_dict, output_path)
-        collection.save_object()
+        collection = stac.create_collection(metadata_dict, metadata)
+        collection.set_self_href(output_path)
+        collection.save_object(dest_href=output_path)
 
     @nrcanlandcover.command(
         "create-cog",
@@ -111,7 +112,8 @@ def create_nrcanlandcover_command(cli: click.Group) -> click.Command:
         jsonld_metadata = utils.get_metadata(metadata)
         output_path = os.path.join(destination,
                                    os.path.basename(cog)[:-4] + ".json")
-        item = stac.create_item(jsonld_metadata, output_path, cog)
+        item = stac.create_item(jsonld_metadata, metadata, cog)
+        item.set_self_href(output_path)
         item.save_object(dest_href=output_path)
 
     return nrcanlandcover
