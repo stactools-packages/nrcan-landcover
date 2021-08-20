@@ -17,14 +17,16 @@ from stactools.nrcan_landcover.constants import (CLASSIFICATION_VALUES,
                                                  DESCRIPTION, JSONLD_HREF,
                                                  LANDCOVER_EPSG, LANDCOVER_ID,
                                                  LANDCOVER_TITLE, LICENSE,
-                                                 LICENSE_LINK, NRCAN_PROVIDER)
+                                                 LICENSE_LINK, NRCAN_PROVIDER,
+                                                 THUMBNAIL_HREF)
 
 logger = logging.getLogger(__name__)
 
 
 def create_item(metadata: Dict[str, Any],
                 metadata_url: str = JSONLD_HREF,
-                cog_href: Optional[str] = None) -> pystac.Item:
+                cog_href: Optional[str] = None,
+                thumbnail_url: str = THUMBNAIL_HREF) -> pystac.Item:
     """Creates a STAC item for a Natural Resources Canada Land Cover dataset.
 
     Args:
@@ -78,8 +80,6 @@ def create_item(metadata: Dict[str, Any],
             item_projection.bbox = list(dataset.bounds)
             item_projection.transform = list(dataset.transform)
             item_projection.shape = [dataset.height, dataset.width]
-
-    # Create metadata asset
     item.add_asset(
         "metadata",
         pystac.Asset(
@@ -87,6 +87,15 @@ def create_item(metadata: Dict[str, Any],
             media_type=pystac.MediaType.JSON,
             roles=["metadata"],
             title="Land cover of Canada metadata",
+        ),
+    )
+    item.add_asset(
+        "thumbnail",
+        pystac.Asset(
+            href=thumbnail_url,
+            media_type=pystac.MediaType.JPEG,
+            roles=["thumbnail"],
+            title="Land cover of Canada thumbnail",
         ),
     )
 
@@ -122,8 +131,10 @@ def create_item(metadata: Dict[str, Any],
     return item
 
 
-def create_collection(metadata: Dict[str, Any],
-                      metadata_url: str = JSONLD_HREF) -> pystac.Collection:
+def create_collection(
+        metadata: Dict[str, Any],
+        metadata_url: str = JSONLD_HREF,
+        thumbnail_url: str = THUMBNAIL_HREF) -> pystac.Collection:
     """Create a STAC Collection using a jsonld file provided by NRCan
     and save it to a destination.
 
@@ -165,8 +176,6 @@ def create_collection(metadata: Dict[str, Any],
         catalog_type=pystac.CatalogType.RELATIVE_PUBLISHED,
     )
     collection.add_link(LICENSE_LINK)
-
-    # Create metadata asset
     collection.add_asset(
         "metadata",
         pystac.Asset(
@@ -176,5 +185,13 @@ def create_collection(metadata: Dict[str, Any],
             title="Land cover of Canada metadata",
         ),
     )
-
+    collection.add_asset(
+        "thumbnail",
+        pystac.Asset(
+            href=thumbnail_url,
+            media_type=pystac.MediaType.JPEG,
+            roles=["thumbnail"],
+            title="Land cover of Canada thumbnail",
+        ),
+    )
     return collection

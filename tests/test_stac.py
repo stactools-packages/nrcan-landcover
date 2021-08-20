@@ -53,6 +53,9 @@ class StacTest(unittest.TestCase):
             item = pystac.read_file(item_path)
         asset = item.assets["landcover"]
 
+        assert "metadata" in item.assets
+        assert "thumbnail" in item.assets
+
         # Projection Extension
         assert "proj:epsg" in item.properties
         assert "proj:bbox" in item.properties
@@ -72,6 +75,8 @@ class StacTest(unittest.TestCase):
         assert "data_type" in asset.extra_fields["raster:bands"][0]
         assert "spatial_resolution" in asset.extra_fields["raster:bands"][0]
 
+        item.validate()
+
     def test_create_collection(self):
         with TemporaryDirectory() as tmp_dir:
             metadata = utils.get_metadata(JSONLD_HREF)
@@ -88,5 +93,8 @@ class StacTest(unittest.TestCase):
             collection_path = os.path.join(tmp_dir, jsons[0])
 
             collection = pystac.read_file(collection_path)
+
+            assert "metadata" in collection.assets
+            assert "thumbnail" in collection.assets
 
             collection.validate()
