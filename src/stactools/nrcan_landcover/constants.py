@@ -27,6 +27,8 @@ JSONLD_HREF = "https://open.canada.ca/data/en/dataset/4e615eae-b90c-420b-adee-2c
 
 NRCAN_FTP = "http://ftp.maps.canada.ca/pub/nrcan_rncan/Land-cover_Couverture-du-sol/canada-landcover_canada-couverture-du-sol/CanadaLandcover2015.zip"
 
+THUMBNAIL_HREF = "https://atlas.gc.ca/lcct/images/M.png"
+
 COLOUR_MAP = {
     0: (0, 0, 0, 0),
     1: (0, 61, 0, 255),
