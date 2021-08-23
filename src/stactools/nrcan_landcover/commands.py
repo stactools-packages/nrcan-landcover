@@ -3,6 +3,7 @@ import os
 from typing import Optional
 
 import click
+from pystac import CatalogType
 
 from stactools.nrcan_landcover import cog, extent, stac, utils
 from stactools.nrcan_landcover.constants import JSONLD_HREF
@@ -50,8 +51,9 @@ def create_nrcanlandcover_command(cli: click.Group) -> click.Command:
         output_path = os.path.join(destination, "collection.json")
         collection = stac.create_collection(metadata_dict, metadata)
         collection.set_self_href(output_path)
-        collection.make_all_asset_hrefs_relative()
-        collection.save_object(dest_href=output_path)
+        collection.normalize_hrefs(destination)
+        collection.save(catalog_type=CatalogType.SELF_CONTAINED)
+        collection.validate()
 
     @nrcanlandcover.command(
         "create-cog",
@@ -97,12 +99,20 @@ def create_nrcanlandcover_command(cli: click.Group) -> click.Command:
     )
     @click.option("-c", "--cog", required=True, help="COG href")
     @click.option(
+        "-e",
+        "--extent-asset",
+        required=False,
+        help="An asset representing the extent of the STAC Item",
+    )
+    @click.option(
         "-m",
         "--metadata",
         help="The url to the metadata description.",
         default=JSONLD_HREF,
     )
-    def create_item_command(destination: str, cog: str, metadata: str) -> None:
+    def create_item_command(destination: str, cog: str,
+                            extent_asset: Optional[str],
+                            metadata: str) -> None:
         """Generate a STAC item using the metadata, with an asset url as provided.
 
         Args:
@@ -113,10 +123,15 @@ def create_nrcanlandcover_command(cli: click.Group) -> click.Command:
         jsonld_metadata = utils.get_metadata(metadata)
         output_path = os.path.join(destination,
                                    os.path.basename(cog)[:-4] + ".json")
-        item = stac.create_item(jsonld_metadata, metadata, cog)
+        if extent_asset is None and os.path.join(destination,
+                                                 "extent.geojson"):
+            extent_asset = os.path.join(destination, "extent.geojson")
+        item = stac.create_item(jsonld_metadata, destination, metadata, cog,
+                                extent_asset)
         item.set_self_href(output_path)
         item.make_asset_hrefs_relative()
-        item.save_object(dest_href=output_path)
+        item.save_object()
+        item.validate()
 
     @nrcanlandcover.command(
         "create-extent-asset",

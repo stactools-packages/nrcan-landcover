@@ -1,4 +1,5 @@
 import logging
+import os
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
@@ -19,11 +20,13 @@ from stactools.nrcan_landcover.constants import (CLASSIFICATION_VALUES,
                                                  LANDCOVER_TITLE, LICENSE,
                                                  LICENSE_LINK, NRCAN_PROVIDER,
                                                  THUMBNAIL_HREF)
+from stactools.nrcan_landcover.utils import uri_validator
 
 logger = logging.getLogger(__name__)
 
 
 def create_item(metadata: Dict[str, Any],
+                destination: str,
                 metadata_url: str = JSONLD_HREF,
                 cog_href: Optional[str] = None,
                 extent_asset_path: Optional[str] = None,
@@ -37,6 +40,12 @@ def create_item(metadata: Dict[str, Any],
     Returns:
         pystac.Item: STAC Item object.
     """
+
+    cog_href_relative = None
+    if cog_href and not uri_validator(cog_href):
+        cog_href_relative = os.path.relpath(cog_href, destination)
+    if extent_asset_path and not uri_validator(extent_asset_path):
+        extent_asset_path = os.path.relpath(extent_asset_path, destination)
 
     title = metadata["tiff_metadata"]["dct:title"]
     description = metadata["description_metadata"]["dct:description"]
@@ -112,7 +121,7 @@ def create_item(metadata: Dict[str, Any],
     if cog_href is not None:
         # Create COG asset if it exists.
         cog_asset = pystac.Asset(
-            href=cog_href,
+            href=cog_href_relative or cog_href,
             media_type=pystac.MediaType.COG,
             roles=["data"],
             title="Land cover of Canada COGs",
