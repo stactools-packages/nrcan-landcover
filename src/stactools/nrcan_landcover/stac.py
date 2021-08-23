@@ -26,6 +26,7 @@ logger = logging.getLogger(__name__)
 def create_item(metadata: Dict[str, Any],
                 metadata_url: str = JSONLD_HREF,
                 cog_href: Optional[str] = None,
+                extent_asset_path: Optional[str] = None,
                 thumbnail_url: str = THUMBNAIL_HREF) -> pystac.Item:
     """Creates a STAC item for a Natural Resources Canada Land Cover dataset.
 
@@ -52,7 +53,6 @@ def create_item(metadata: Dict[str, Any],
 
     id = title.replace(" ", "-")
     geometry = metadata["geom_metadata"]
-
     bbox = list(Polygon(geometry.get("coordinates")[0]).bounds)
     properties = {
         "title": title,
@@ -98,6 +98,16 @@ def create_item(metadata: Dict[str, Any],
             title="Land cover of Canada thumbnail",
         ),
     )
+    if extent_asset_path:
+        item.add_asset(
+            "extent",
+            pystac.Asset(
+                href=extent_asset_path,
+                media_type=pystac.MediaType.GEOJSON,
+                roles=["extent"],
+                title="Land cover of Canada extent",
+            ),
+        )
 
     if cog_href is not None:
         # Create COG asset if it exists.
