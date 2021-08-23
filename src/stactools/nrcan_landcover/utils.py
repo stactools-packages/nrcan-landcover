@@ -3,6 +3,7 @@ import os
 import shutil
 from tempfile import mkdtemp
 from typing import Any, Dict
+from urllib.parse import urlparse
 from zipfile import ZipFile
 
 import requests
@@ -88,3 +89,11 @@ def get_metadata(metadata_url: str) -> Dict[str, Any]:
     else:
         # only jsonld support.
         raise NotImplementedError()
+
+
+def uri_validator(x: str) -> bool:
+    try:
+        result = urlparse(x)
+        return all([result.scheme, result.netloc])
+    except Exception:
+        return False

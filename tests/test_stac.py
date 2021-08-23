@@ -41,7 +41,7 @@ class StacTest(unittest.TestCase):
 
             # Create stac item
             json_path = os.path.join(tmp_dir, "test.json")
-            item = stac.create_item(metadata, json_path, cog_path)
+            item = stac.create_item(metadata, tmp_dir, JSONLD_HREF, cog_path)
             item.set_self_href(json_path)
             item.save_object(dest_href=json_path)
 
