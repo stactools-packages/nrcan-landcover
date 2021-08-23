@@ -9,6 +9,7 @@ import pytz
 import rasterio
 from dateutil.relativedelta import relativedelta
 from pystac.extensions.file import FileExtension
+from pystac.extensions.item_assets import AssetDefinition, ItemAssetsExtension
 from pystac.extensions.projection import ProjectionExtension
 from pystac.extensions.raster import (DataType, RasterBand, RasterExtension,
                                       Sampling)
@@ -213,4 +214,30 @@ def create_collection(
             title="Land cover of Canada thumbnail",
         ),
     )
+
+    collection_item_asset = ItemAssetsExtension.ext(collection,
+                                                    add_if_missing=True)
+    collection_item_asset.item_assets = {
+        "metadata":
+        AssetDefinition(
+            dict(
+                media_type=pystac.MediaType.JSON,
+                roles=["metadata"],
+                title="Land cover of Canada metadata",
+            )),
+        "thumbnail":
+        AssetDefinition(
+            dict(
+                media_type=pystac.MediaType.JPEG,
+                roles=["thumbnail"],
+                title="Land cover of Canada thumbnail",
+            )),
+        "landcover":
+        AssetDefinition(
+            dict(
+                media_type=pystac.MediaType.COG,
+                roles=["data"],
+                title="Land cover of Canada COGs",
+            ))
+    }
     return collection
