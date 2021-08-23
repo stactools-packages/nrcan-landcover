@@ -140,7 +140,7 @@ def create_item(metadata: Dict[str, Any],
             href=cog_href_relative or cog_href,
             media_type=pystac.MediaType.COG,
             roles=["data"],
-            title="Land cover of Canada COGs",
+            title="Land cover of Canada COG",
         )
         item.add_asset("landcover", cog_asset)
         # File Extension
@@ -209,6 +209,7 @@ def create_collection(
             pystac.TemporalExtent([[start_datetime, end_datetime]]),
         ),
         catalog_type=pystac.CatalogType.RELATIVE_PUBLISHED,
+        keywords=KEYWORDS,
     )
     collection.add_link(LICENSE_LINK)
     collection.add_asset(
@@ -236,23 +237,23 @@ def create_collection(
         "metadata":
         AssetDefinition(
             dict(
-                media_type=pystac.MediaType.JSON,
+                type=pystac.MediaType.JSON,
                 roles=["metadata"],
                 title="Land cover of Canada metadata",
             )),
         "thumbnail":
         AssetDefinition(
             dict(
-                media_type=pystac.MediaType.JPEG,
+                type=pystac.MediaType.JPEG,
                 roles=["thumbnail"],
                 title="Land cover of Canada thumbnail",
             )),
         "landcover":
         AssetDefinition(
             dict(
-                media_type=pystac.MediaType.COG,
+                type=pystac.MediaType.COG,
                 roles=["data"],
-                title="Land cover of Canada COGs",
+                title="Land cover of Canada COG",
             ))
     }
     return collection

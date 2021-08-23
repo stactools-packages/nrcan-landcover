@@ -3,7 +3,6 @@ import os
 from typing import Optional
 
 import click
-from pystac import CatalogType
 
 from stactools.nrcan_landcover import cog, extent, stac, utils
 from stactools.nrcan_landcover.constants import JSONLD_HREF
@@ -52,7 +51,7 @@ def create_nrcanlandcover_command(cli: click.Group) -> click.Command:
         collection = stac.create_collection(metadata_dict, metadata)
         collection.set_self_href(output_path)
         collection.normalize_hrefs(destination)
-        collection.save(catalog_type=CatalogType.SELF_CONTAINED)
+        collection.save()
         collection.validate()
 
     @nrcanlandcover.command(
