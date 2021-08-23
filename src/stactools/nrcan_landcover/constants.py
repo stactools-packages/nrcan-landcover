@@ -18,7 +18,12 @@ DESCRIPTION = """Collection of Land Cover products for Canada as produced by Nat
 
 NRCAN_PROVIDER = Provider(
     name="Natural Resources Canada | Ressources naturelles Canada",
-    roles=[ProviderRole.PRODUCER, ProviderRole.PROCESSOR, ProviderRole.HOST],
+    roles=[
+        ProviderRole.HOST,
+        ProviderRole.LICENSOR,
+        ProviderRole.PRODUCER,
+        ProviderRole.PROCESSOR,
+    ],
     url=
     "https://www.nrcan.gc.ca/maps-tools-publications/satellite-imagery-air-photos/application-development/land-cover/21755"
 )
@@ -28,6 +33,19 @@ JSONLD_HREF = "https://open.canada.ca/data/en/dataset/4e615eae-b90c-420b-adee-2c
 NRCAN_FTP = "http://ftp.maps.canada.ca/pub/nrcan_rncan/Land-cover_Couverture-du-sol/canada-landcover_canada-couverture-du-sol/CanadaLandcover2015.zip"
 
 THUMBNAIL_HREF = "https://atlas.gc.ca/lcct/images/M.png"
+
+KEYWORDS = [
+    "Land Cover",
+    "Remote Sensing",
+    "Landsat",
+    "Reflectance",
+    "Mid-latitude",
+    "Western Hemisphere",
+    "Northern Hemisphere",
+    "North America",
+    "Canada",
+    "Geographical maps",
+]
 
 COLOUR_MAP = {
     0: (0, 0, 0, 0),
