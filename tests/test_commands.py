@@ -1,4 +1,5 @@
-import os.path
+import json
+import os
 from tempfile import TemporaryDirectory
 
 import pystac
@@ -71,3 +72,21 @@ class CreateCollectionTest(CliTestCase):
             item = pystac.read_file(item_path)
 
         item.validate()
+
+    def test_create_extent_asset(self):
+        with TemporaryDirectory() as tmp_dir:
+            result = self.run_command(
+                ["nrcanlandcover", "create-extent-asset", "-d", tmp_dir])
+            self.assertEqual(result.exit_code,
+                             0,
+                             msg="\n{}".format(result.output))
+
+            with open(os.path.join(tmp_dir, "extent.geojson"), "r") as file:
+                extent = json.loads(file.read())
+                assert "type" in extent
+                assert extent["type"] == "FeatureCollection"
+                assert extent["features"][0]["geometry"]["type"] == "Polygon"
+                assert len(
+                    extent["features"][0]["geometry"]["coordinates"][0]) == 5
+                assert len(extent["features"][0]["geometry"]["coordinates"][0]
+                           [0]) == 2

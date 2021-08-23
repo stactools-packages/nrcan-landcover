@@ -4,7 +4,7 @@ from typing import Optional
 
 import click
 
-from stactools.nrcan_landcover import cog, stac, utils
+from stactools.nrcan_landcover import cog, extent, stac, utils
 from stactools.nrcan_landcover.constants import JSONLD_HREF
 
 logger = logging.getLogger(__name__)
@@ -50,6 +50,7 @@ def create_nrcanlandcover_command(cli: click.Group) -> click.Command:
         output_path = os.path.join(destination, "collection.json")
         collection = stac.create_collection(metadata_dict, metadata)
         collection.set_self_href(output_path)
+        collection.make_all_asset_hrefs_relative()
         collection.save_object(dest_href=output_path)
 
     @nrcanlandcover.command(
@@ -114,6 +115,34 @@ def create_nrcanlandcover_command(cli: click.Group) -> click.Command:
                                    os.path.basename(cog)[:-4] + ".json")
         item = stac.create_item(jsonld_metadata, metadata, cog)
         item.set_self_href(output_path)
+        item.make_asset_hrefs_relative()
         item.save_object(dest_href=output_path)
+
+    @nrcanlandcover.command(
+        "create-extent-asset",
+        short_help="Create extent asset for the STAC Item",
+    )
+    @click.option("-d",
+                  "--destination",
+                  required=True,
+                  help="The output directory for the extent asset")
+    @click.option(
+        "-m",
+        "--metadata",
+        help="The url to the metadata description.",
+        default=JSONLD_HREF,
+    )
+    def create_extent_asset_command(destination: str, metadata: str) -> None:
+        """Generate a GeoJSON of the extent of the STAC Item.
+
+        Args:
+            destination (str): Local directory to save output COGs
+        """
+        if not os.path.isdir(destination):
+            raise IOError(f'Destination folder "{destination}" not found')
+
+        jsonld_metadata = utils.get_metadata(metadata)
+        output_path = os.path.join(destination, "extent.geojson")
+        extent.create_extent_asset(jsonld_metadata, output_path)
 
     return nrcanlandcover
