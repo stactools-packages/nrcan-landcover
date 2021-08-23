@@ -10,6 +10,8 @@ import rasterio
 from dateutil.relativedelta import relativedelta
 from pystac.extensions.file import FileExtension
 from pystac.extensions.item_assets import AssetDefinition, ItemAssetsExtension
+from pystac.extensions.label import (LabelClasses, LabelExtension, LabelTask,
+                                     LabelType)
 from pystac.extensions.projection import ProjectionExtension
 from pystac.extensions.raster import (DataType, RasterBand, RasterExtension,
                                       Sampling)
@@ -90,6 +92,19 @@ def create_item(metadata: Dict[str, Any],
             item_projection.bbox = list(dataset.bounds)
             item_projection.transform = list(dataset.transform)
             item_projection.shape = [dataset.height, dataset.width]
+
+    item_label = LabelExtension.ext(item, add_if_missing=True)
+    item_label.label_type = LabelType.RASTER
+    item_label.label_tasks = [LabelTask.CLASSIFICATION]
+    item_label.label_properties = None
+    item_label.label_description = ""
+    item_label.label_classes = [
+        # TODO: The STAC Label extension JSON Schema is incorrect.
+        # https://github.com/stac-extensions/label/pull/8
+        # When it is fixed, this should be None, not "None"
+        LabelClasses.create(list(CLASSIFICATION_VALUES.values()), "None")
+    ]
+
     item.add_asset(
         "metadata",
         pystac.Asset(
