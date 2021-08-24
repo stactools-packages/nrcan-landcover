@@ -271,4 +271,10 @@ def create_collection(
                 title="Land cover of Canada COG",
             ))
     }
+
+    collection.summaries = pystac.Summaries({
+        "label:tasks": [LabelTask.CLASSIFICATION],
+        "label:type": [LabelType.RASTER],
+        "proj:epsg": [LANDCOVER_EPSG],
+    })
     return collection
