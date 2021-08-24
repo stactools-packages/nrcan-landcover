@@ -10,19 +10,34 @@ import rasterio
 from dateutil.relativedelta import relativedelta
 from pystac.extensions.file import FileExtension
 from pystac.extensions.item_assets import AssetDefinition, ItemAssetsExtension
-from pystac.extensions.label import (LabelClasses, LabelExtension, LabelTask,
-                                     LabelType)
+from pystac.extensions.label import (
+    LabelClasses,
+    LabelExtension,
+    LabelTask,
+    LabelType,
+)
 from pystac.extensions.projection import ProjectionExtension
-from pystac.extensions.raster import (DataType, RasterBand, RasterExtension,
-                                      Sampling)
+from pystac.extensions.raster import (
+    DataType,
+    RasterBand,
+    RasterExtension,
+    Sampling,
+)
 from shapely.geometry import Polygon
 
-from stactools.nrcan_landcover.constants import (CLASSIFICATION_VALUES,
-                                                 DESCRIPTION, JSONLD_HREF,
-                                                 LANDCOVER_EPSG, LANDCOVER_ID,
-                                                 LANDCOVER_TITLE, LICENSE,
-                                                 LICENSE_LINK, NRCAN_PROVIDER,
-                                                 THUMBNAIL_HREF)
+from stactools.nrcan_landcover.constants import (
+    CLASSIFICATION_VALUES,
+    DESCRIPTION,
+    JSONLD_HREF,
+    KEYWORDS,
+    LANDCOVER_EPSG,
+    LANDCOVER_ID,
+    LANDCOVER_TITLE,
+    LICENSE,
+    LICENSE_LINK,
+    NRCAN_PROVIDER,
+    THUMBNAIL_HREF,
+)
 from stactools.nrcan_landcover.utils import uri_validator
 
 logger = logging.getLogger(__name__)
