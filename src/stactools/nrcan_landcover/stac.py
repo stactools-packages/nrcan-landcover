@@ -264,12 +264,22 @@ def create_collection(
                 title="Land cover of Canada thumbnail",
             )),
         "landcover":
-        AssetDefinition(
-            dict(
-                type=pystac.MediaType.COG,
-                roles=["data"],
-                title="Land cover of Canada COG",
-            ))
+        AssetDefinition({
+            "type":
+            pystac.MediaType.COG,
+            "roles": ["data"],
+            "title":
+            "Land cover of Canada COG",
+            "raster:bands":
+            RasterBand.create(nodata=0,
+                              sampling=Sampling.AREA,
+                              data_type=DataType.UINT8,
+                              spatial_resolution=30).to_dict(),
+            "file:values": [{
+                "values": [value],
+                "summary": summary
+            } for value, summary in CLASSIFICATION_VALUES.items()],
+        })
     }
 
     collection.summaries = pystac.Summaries({
