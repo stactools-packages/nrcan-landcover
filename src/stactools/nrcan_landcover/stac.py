@@ -52,8 +52,12 @@ def create_item(metadata: Dict[str, Any],
     """Creates a STAC item for a Natural Resources Canada Land Cover dataset.
 
     Args:
+        metadata (dict): Parsed metadata.
+        destination (str): Directory where the Item will be stored.
         metadata_url (str, optional): Path to provider metadata.
         cog_href (str, optional): Path to COG asset.
+        extent_asset_path (str, optional): Path to extent GeoJSON file.
+        thumbnail_url (str, optional): URL for thumbnail image.
 
     Returns:
         pystac.Item: STAC Item object.
@@ -154,7 +158,11 @@ def create_item(metadata: Dict[str, Any],
         cog_asset = pystac.Asset(
             href=cog_href_relative or cog_href,
             media_type=pystac.MediaType.COG,
-            roles=["data"],
+            roles=[
+                "data",
+                "labels",
+                "labels-raster",
+            ],
             title="Land cover of Canada COG",
         )
         item.add_asset("landcover", cog_asset)
@@ -178,6 +186,23 @@ def create_item(metadata: Dict[str, Any],
                               data_type=DataType.UINT8,
                               spatial_resolution=30)
         ]
+        # Projection Extension
+        cog_asset_projection = ProjectionExtension.ext(cog_asset,
+                                                       add_if_missing=True)
+        cog_asset_projection.epsg = item_projection.epsg
+        cog_asset_projection.bbox = item_projection.bbox
+        cog_asset_projection.transform = item_projection.transform
+        cog_asset_projection.shape = item_projection.shape
+        # Label Extension (doesn't seem to handle Assets properly)
+        cog_asset.extra_fields["label:type"] = item_label.label_type
+        cog_asset.extra_fields["label:tasks"] = item_label.label_tasks
+        cog_asset.extra_fields[
+            "label:properties"] = item_label.label_properties
+        cog_asset.extra_fields[
+            "label:description"] = item_label.label_description
+        cog_asset.extra_fields["label:classes"] = [
+            item_label.label_classes[0].to_dict()
+        ]
     return item
 
 
@@ -185,8 +210,7 @@ def create_collection(
         metadata: Dict[str, Any],
         metadata_url: str = JSONLD_HREF,
         thumbnail_url: str = THUMBNAIL_HREF) -> pystac.Collection:
-    """Create a STAC Collection using a jsonld file provided by NRCan
-    and save it to a destination.
+    """Create a STAC Collection using a jsonld file provided by NRCan.
 
     The metadata dict may be created using `utils.get_metadata`
 
@@ -246,6 +270,22 @@ def create_collection(
         ),
     )
 
+    collection_label = LabelExtension.summaries(collection,
+                                                add_if_missing=True)
+    collection_label.label_type = [LabelType.RASTER]
+    collection_label.label_tasks = [LabelTask.CLASSIFICATION]
+    collection_label.label_properties = None
+    collection_label.label_classes = [
+        # TODO: The STAC Label extension JSON Schema is incorrect.
+        # https://github.com/stac-extensions/label/pull/8
+        # When it is fixed, this should be None, not "None"
+        LabelClasses.create(list(CLASSIFICATION_VALUES.values()), "None")
+    ]
+
+    collection_proj = ProjectionExtension.summaries(collection,
+                                                    add_if_missing=True)
+    collection_proj.epsg = [LANDCOVER_EPSG]
+
     collection_item_asset = ItemAssetsExtension.ext(collection,
                                                     add_if_missing=True)
     collection_item_asset.item_assets = {
@@ -267,7 +307,11 @@ def create_collection(
         AssetDefinition({
             "type":
             pystac.MediaType.COG,
-            "roles": ["data"],
+            "roles": [
+                "data",
+                "labels",
+                "labels-raster",
+            ],
             "title":
             "Land cover of Canada COG",
             "raster:bands":
@@ -279,12 +323,14 @@ def create_collection(
                 "values": [value],
                 "summary": summary
             } for value, summary in CLASSIFICATION_VALUES.items()],
+            "label:type":
+            collection_label.label_type[0],
+            "label:tasks":
+            collection_label.label_tasks,
+            "label:properties":
+            None,
+            "label:classes": [collection_label.label_classes[0].to_dict()],
         })
     }
 
-    collection.summaries = pystac.Summaries({
-        "label:tasks": [LabelTask.CLASSIFICATION],
-        "label:type": [LabelType.RASTER],
-        "proj:epsg": [LANDCOVER_EPSG],
-    })
     return collection
