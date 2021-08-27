@@ -120,6 +120,7 @@ def create_item(metadata: Dict[str, Any],
     item_label.label_classes = [
         # TODO: The STAC Label extension JSON Schema is incorrect.
         # https://github.com/stac-extensions/label/pull/8
+        # https://github.com/stac-utils/pystac/issues/611
         # When it is fixed, this should be None, not "None"
         LabelClasses.create(list(CLASSIFICATION_VALUES.values()), "None")
     ]
@@ -278,6 +279,7 @@ def create_collection(
     collection_label.label_classes = [
         # TODO: The STAC Label extension JSON Schema is incorrect.
         # https://github.com/stac-extensions/label/pull/8
+        # https://github.com/stac-utils/pystac/issues/611
         # When it is fixed, this should be None, not "None"
         LabelClasses.create(list(CLASSIFICATION_VALUES.values()), "None")
     ]

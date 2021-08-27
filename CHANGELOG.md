@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
+- Label and Projection extensions on Asset, Collection, and Summary
+- Keywords on the Collection.
 - Thumbnail asset on Collection and Item.
 - Metadata Asset on STAC Collection.
 
@@ -21,6 +23,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
+- create-item and create-collection shouldn't call save on the STAC object.
 - Metadata URL on STAC Item.
 
 ## [0.2.4]
