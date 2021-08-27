@@ -332,6 +332,8 @@ def create_collection(
             "label:properties":
             None,
             "label:classes": [collection_label.label_classes[0].to_dict()],
+            "proj:epsg":
+            collection_proj.epsg[0]
         })
     }
 
