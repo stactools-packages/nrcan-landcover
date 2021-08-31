@@ -334,7 +334,14 @@ def create_collection(
             "label:classes": [collection_label.label_classes[0].to_dict()],
             "proj:epsg":
             collection_proj.epsg[0]
-        })
+        }),
+        "extent":
+        AssetDefinition(
+            dict(
+                type=pystac.MediaType.GEOJSON,
+                roles=["extent"],
+                title="Land cover of Canada extent",
+            )),
     }
 
     return collection
