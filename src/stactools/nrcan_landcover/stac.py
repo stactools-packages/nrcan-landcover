@@ -121,8 +121,8 @@ def create_item(metadata: Dict[str, Any],
         # TODO: The STAC Label extension JSON Schema is incorrect.
         # https://github.com/stac-extensions/label/pull/8
         # https://github.com/stac-utils/pystac/issues/611
-        # When it is fixed, this should be None, not "None"
-        LabelClasses.create(list(CLASSIFICATION_VALUES.values()), "None")
+        # When it is fixed, this should be None, not the empty string.
+        LabelClasses.create(list(CLASSIFICATION_VALUES.values()), "")
     ]
 
     item.add_asset(
@@ -280,8 +280,8 @@ def create_collection(
         # TODO: The STAC Label extension JSON Schema is incorrect.
         # https://github.com/stac-extensions/label/pull/8
         # https://github.com/stac-utils/pystac/issues/611
-        # When it is fixed, this should be None, not "None"
-        LabelClasses.create(list(CLASSIFICATION_VALUES.values()), "None")
+        # When it is fixed, this should be None, not the empty string.
+        LabelClasses.create(list(CLASSIFICATION_VALUES.values()), "")
     ]
 
     collection_proj = ProjectionExtension.summaries(collection,
