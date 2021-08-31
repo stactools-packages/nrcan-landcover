@@ -72,7 +72,7 @@ def create_nrcanlandcover_command(cli: click.Group) -> click.Command:
 
         Args:
             destination (str): Local directory to save output COGs
-            source (str): An input NRCAN Landcover GeoTiff
+            source (str, optional): An input NRCAN Landcover GeoTiff
         """
         if not os.path.isdir(destination):
             raise IOError(f'Destination folder "{destination}" not found')
@@ -117,13 +117,14 @@ def create_nrcanlandcover_command(cli: click.Group) -> click.Command:
         Args:
             destination (str): Local directory to save the STAC Item json
             cog (str): location of a COG asset for the item
+            extent_asset (str, optional): File containing a GeoJSON asset of the extent
             metadata (str): url containing the NRCAN Landcover JSONLD metadata
         """
         jsonld_metadata = utils.get_metadata(metadata)
         output_path = os.path.join(destination,
                                    os.path.basename(cog)[:-4] + ".json")
-        if extent_asset is None and os.path.join(destination,
-                                                 "extent.geojson"):
+        if extent_asset is None and os.path.exists(
+                os.path.join(destination, "extent.geojson")):
             extent_asset = os.path.join(destination, "extent.geojson")
         item = stac.create_item(jsonld_metadata, destination, metadata, cog,
                                 extent_asset)
@@ -151,6 +152,7 @@ def create_nrcanlandcover_command(cli: click.Group) -> click.Command:
 
         Args:
             destination (str): Local directory to save output COGs
+            metadata (str): URL to the metadata
         """
         if not os.path.isdir(destination):
             raise IOError(f'Destination folder "{destination}" not found')
