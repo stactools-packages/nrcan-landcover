@@ -21,8 +21,8 @@ NRCAN_PROVIDER = Provider(
     roles=[
         ProviderRole.HOST,
         ProviderRole.LICENSOR,
-        ProviderRole.PRODUCER,
         ProviderRole.PROCESSOR,
+        ProviderRole.PRODUCER,
     ],
     url=
     "https://www.nrcan.gc.ca/maps-tools-publications/satellite-imagery-air-photos/application-development/land-cover/21755"
