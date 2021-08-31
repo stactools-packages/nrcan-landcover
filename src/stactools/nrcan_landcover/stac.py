@@ -218,6 +218,7 @@ def create_collection(
     Args:
         metadata (dict): metadata parsed from jsonld
         metadata_url (str, optional): Location to save the output STAC Collection json
+        thumbnail_url (str, optional): URL to a thumbnail image for the Collection
 
     Returns:
         pystac.Collection: pystac collection object
