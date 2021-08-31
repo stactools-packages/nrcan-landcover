@@ -316,11 +316,12 @@ def create_collection(
             ],
             "title":
             "Land cover of Canada COG",
-            "raster:bands":
-            RasterBand.create(nodata=0,
-                              sampling=Sampling.AREA,
-                              data_type=DataType.UINT8,
-                              spatial_resolution=30).to_dict(),
+            "raster:bands": [
+                RasterBand.create(nodata=0,
+                                  sampling=Sampling.AREA,
+                                  data_type=DataType.UINT8,
+                                  spatial_resolution=30).to_dict()
+            ],
             "file:values": [{
                 "values": [value],
                 "summary": summary

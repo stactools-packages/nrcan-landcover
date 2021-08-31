@@ -133,10 +133,10 @@ class StacTest(unittest.TestCase):
 
             # Raster Extension
             assert "raster:bands" in item_asset
-            assert "nodata" in item_asset["raster:bands"]
-            assert "sampling" in item_asset["raster:bands"]
-            assert "data_type" in item_asset["raster:bands"]
-            assert "spatial_resolution" in item_asset["raster:bands"]
+            assert "nodata" in item_asset["raster:bands"][0]
+            assert "sampling" in item_asset["raster:bands"][0]
+            assert "data_type" in item_asset["raster:bands"][0]
+            assert "spatial_resolution" in item_asset["raster:bands"][0]
 
             # Label Extension
             assert "labels" in item_asset["roles"]
