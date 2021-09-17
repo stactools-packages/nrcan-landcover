@@ -1,11 +1,9 @@
 # flake8: noqa
 
-from pyproj import CRS
 from pystac import Link, Provider, ProviderRole
 
 LANDCOVER_ID = "nrcan-landcover"
 LANDCOVER_EPSG = 3978
-LANDCOVER_CRS = CRS.from_epsg(LANDCOVER_EPSG)
 LANDCOVER_TITLE = "Land Cover of Canada - Cartographic Product Collection"
 LICENSE = "OGL-Canada-2.0"
 LICENSE_LINK = Link(
