@@ -8,6 +8,7 @@ import pystac
 import pytz
 import rasterio
 from dateutil.relativedelta import relativedelta
+from pyproj import CRS, Proj
 from pystac.extensions.file import FileExtension
 from pystac.extensions.item_assets import AssetDefinition, ItemAssetsExtension
 from pystac.extensions.label import (
@@ -84,7 +85,27 @@ def create_item(metadata: Dict[str, Any],
 
     id = title.replace(" ", "-")
     geometry = metadata["geom_metadata"]
-    bbox = list(Polygon(geometry.get("coordinates")[0]).bounds)
+    if cog_href is not None:
+        with rasterio.open(cog_href) as dataset:
+            cog_bbox = list(dataset.bounds)
+            cog_transform = list(dataset.transform)
+            cog_shape = [dataset.height, dataset.width]
+
+            # If cog is the full dataset, use the bbox from the metadata
+            if cog_bbox == [-2600030.0, -885090.0, 3100000.0, 3914940.0]:
+                bbox = list(Polygon(geometry.get("coordinates")[0]).bounds)
+            else:
+                transformer = Proj.from_crs(CRS.from_epsg(LANDCOVER_EPSG),
+                                            CRS.from_epsg(4326),
+                                            always_xy=True)
+                bbox = list(
+                    transformer.transform_bounds(dataset.bounds.left,
+                                                 dataset.bounds.bottom,
+                                                 dataset.bounds.right,
+                                                 dataset.bounds.top))
+    else:
+        bbox = list(Polygon(geometry.get("coordinates")[0]).bounds)
+
     properties = {
         "title": title,
         "description": description,
@@ -108,9 +129,9 @@ def create_item(metadata: Dict[str, Any],
     item_projection.epsg = LANDCOVER_EPSG
     if cog_href is not None:
         with rasterio.open(cog_href) as dataset:
-            item_projection.bbox = list(dataset.bounds)
-            item_projection.transform = list(dataset.transform)
-            item_projection.shape = [dataset.height, dataset.width]
+            item_projection.bbox = cog_bbox
+            item_projection.transform = cog_transform
+            item_projection.shape = cog_shape
 
     item_label = LabelExtension.ext(item, add_if_missing=True)
     item_label.label_type = LabelType.RASTER
