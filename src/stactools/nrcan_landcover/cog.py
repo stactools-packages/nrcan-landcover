@@ -8,7 +8,11 @@ from zipfile import ZipFile
 import rasterio
 import requests
 
-from stactools.nrcan_landcover.constants import COLOUR_MAP, JSONLD_HREF, TILING_PIXEL_SIZE
+from stactools.nrcan_landcover.constants import (
+    COLOUR_MAP,
+    JSONLD_HREF,
+    TILING_PIXEL_SIZE,
+)
 from stactools.nrcan_landcover.utils import get_metadata
 
 logger = logging.getLogger(__name__)
@@ -47,8 +51,7 @@ def download_create_cog(
             output_file = os.path.join(
                 output_directory,
                 os.path.basename(file_name).replace(".tif", "") + "_cog.tif")
-            return create_cog(file_name, output_file, retile, raise_on_fail,
-                              dry_run)
+            return create_cog(file_name, output_file, raise_on_fail, dry_run)
 
 
 def create_retiled_cogs(
