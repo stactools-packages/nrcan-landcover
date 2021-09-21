@@ -81,3 +81,5 @@ CLASSIFICATION_VALUES = {
     18: "Water",
     19: "Snow and Ice",
 }
+
+TILING_PIXEL_SIZE = (10001, 10001)

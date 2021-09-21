@@ -66,20 +66,30 @@ def create_nrcanlandcover_command(cli: click.Group) -> click.Command:
                   "--source",
                   required=False,
                   help="Path to an input GeoTiff")
-    def create_cog_command(destination: str, source: Optional[str]) -> None:
+    @click.option(
+        "-t",
+        "--tile",
+        help="Tile the tiff into many smaller files.",
+        is_flag=True,
+        default=False,
+    )
+    def create_cog_command(destination: str, source: Optional[str],
+                           tile: bool) -> None:
         """Generate a COG from a GeoTiff. The COG will be saved in the desination
         with `_cog.tif` appended to the name.
 
         Args:
             destination (str): Local directory to save output COGs
             source (str, optional): An input NRCAN Landcover GeoTiff
+            tile (bool, optional): Tile the tiff into many smaller files.
         """
         if not os.path.isdir(destination):
             raise IOError(f'Destination folder "{destination}" not found')
 
         if source is None:
-            cog.download_create_cog(destination)
-
+            cog.download_create_cog(destination, retile=tile)
+        elif tile:
+            cog.create_retiled_cogs(source, destination)
         else:
             output_path = os.path.join(
                 destination,

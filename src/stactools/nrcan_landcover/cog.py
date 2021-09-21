@@ -8,7 +8,7 @@ from zipfile import ZipFile
 import rasterio
 import requests
 
-from stactools.nrcan_landcover.constants import COLOUR_MAP, JSONLD_HREF
+from stactools.nrcan_landcover.constants import COLOUR_MAP, JSONLD_HREF, TILING_PIXEL_SIZE
 from stactools.nrcan_landcover.utils import get_metadata
 
 logger = logging.getLogger(__name__)
@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 
 def download_create_cog(
     output_directory: str,
+    retile: bool = False,
     metadata_url: str = JSONLD_HREF,
     raise_on_fail: bool = True,
     dry_run: bool = False,
@@ -39,10 +40,75 @@ def download_create_cog(
                 zip_ref.extractall(tmp_dir)
         print(os.listdir(tmp_dir))
         file_name = glob(f"{tmp_dir}/*.tif").pop()
-        output_file = os.path.join(
-            output_directory,
-            os.path.basename(file_name).replace(".tif", "") + "_cog.tif")
-        return create_cog(file_name, output_file, raise_on_fail, dry_run)
+        if retile:
+            return create_retiled_cogs(file_name, output_directory,
+                                       raise_on_fail, dry_run)
+        else:
+            output_file = os.path.join(
+                output_directory,
+                os.path.basename(file_name).replace(".tif", "") + "_cog.tif")
+            return create_cog(file_name, output_file, retile, raise_on_fail,
+                              dry_run)
+
+
+def create_retiled_cogs(
+    input_path: str,
+    output_directory: str,
+    raise_on_fail: bool = True,
+    dry_run: bool = False,
+) -> str:
+    """Split tiff into tiles and create COGs
+
+    Args:
+        input_path (str): Path to the Natural Resources Canada Land Cover data.
+        output_directory (str): The directory to which the COG will be written.
+        raise_on_fail (bool, optional): Whether to raise error on failure.
+            Defaults to True.
+        dry_run (bool, optional): Run without downloading tif, creating COG,
+            and writing COG. Defaults to False.
+
+    Returns:
+        str: The path to the output COGs.
+    """
+    output = None
+    try:
+        if dry_run:
+            logger.info(
+                "Would have split TIF into tiles, created COGs, and written COGs"
+            )
+        else:
+            with TemporaryDirectory() as tmp_dir:
+                cmd = [
+                    "gdal_retile.py",
+                    "-ps",
+                    str(TILING_PIXEL_SIZE[0]),
+                    str(TILING_PIXEL_SIZE[1]),
+                    "-targetDir",
+                    tmp_dir,
+                    input_path,
+                ]
+                try:
+                    output = check_output(cmd)
+                except CalledProcessError as e:
+                    output = e.output
+                    raise
+                finally:
+                    logger.info(f"output: {str(output)}")
+                file_names = glob(f"{tmp_dir}/*.tif")
+                for f in file_names:
+                    input_file = os.path.join(tmp_dir, f)
+                    output_file = os.path.join(
+                        output_directory,
+                        os.path.basename(f).replace(".tif", "") + "_cog.tif")
+                    create_cog(input_file, output_file, raise_on_fail, dry_run)
+
+    except Exception:
+        logger.error("Failed to process {}".format(input_path))
+
+        if raise_on_fail:
+            raise
+
+    return output_directory
 
 
 def create_cog(
