@@ -1,5 +1,6 @@
 import logging
 import os
+from glob import glob
 from typing import Optional
 
 import click
@@ -46,6 +47,9 @@ def create_nrcanlandcover_command(cli: click.Group) -> click.Command:
         Returns:
             Callable
         """
+        create_collection_command_fn(destination, metadata)
+
+    def create_collection_command_fn(destination: str, metadata: str) -> None:
         metadata_dict = utils.get_metadata(metadata)
         output_path = os.path.join(destination, "collection.json")
         collection = stac.create_collection(metadata_dict, metadata)
@@ -83,6 +87,10 @@ def create_nrcanlandcover_command(cli: click.Group) -> click.Command:
             source (str, optional): An input NRCAN Landcover GeoTiff
             tile (bool, optional): Tile the tiff into many smaller files.
         """
+        create_cog_command_fn(destination, source, tile)
+
+    def create_cog_command_fn(destination: str, source: Optional[str],
+                              tile: bool) -> None:
         if not os.path.isdir(destination):
             raise IOError(f'Destination folder "{destination}" not found')
 
@@ -130,6 +138,11 @@ def create_nrcanlandcover_command(cli: click.Group) -> click.Command:
             extent_asset (str, optional): File containing a GeoJSON asset of the extent
             metadata (str): url containing the NRCAN Landcover JSONLD metadata
         """
+        create_item_command_fn(destination, cog, extent_asset, metadata)
+
+    def create_item_command_fn(destination: str, cog: str,
+                               extent_asset: Optional[str],
+                               metadata: str) -> None:
         jsonld_metadata = utils.get_metadata(metadata)
         output_path = os.path.join(destination,
                                    os.path.basename(cog)[:-4] + ".json")
@@ -164,11 +177,48 @@ def create_nrcanlandcover_command(cli: click.Group) -> click.Command:
             destination (str): Local directory to save output COGs
             metadata (str): URL to the metadata
         """
+        create_extent_asset_command_fn(destination, metadata)
+
+    def create_extent_asset_command_fn(destination: str,
+                                       metadata: str) -> None:
         if not os.path.isdir(destination):
             raise IOError(f'Destination folder "{destination}" not found')
 
         jsonld_metadata = utils.get_metadata(metadata)
         output_path = os.path.join(destination, "extent.geojson")
         extent.create_extent_asset(jsonld_metadata, output_path)
+
+    @nrcanlandcover.command(
+        "build-full-collection",
+        short_help="Creates a STAC collection with Items and Assets",
+    )
+    @click.option(
+        "-d",
+        "--destination",
+        required=True,
+        help="The output directory for the STAC Collection json",
+    )
+    @click.option(
+        "-m",
+        "--metadata",
+        help="The url to the metadata jsonld",
+        default=JSONLD_HREF,
+    )
+    def build_full_collection_command(destination: str, metadata: str) -> None:
+        """Creates a STAC collection with Items and Assets
+
+        Args:
+            destination (str): Directory used to store the collection json
+            metadata (str, optional): Path to a jsonld metadata file - provided by NRCan
+        Returns:
+            Callable
+        """
+        create_cog_command_fn(destination, None, tile=True)
+        for cog_file in glob(f"{destination}/*.tif"):
+            create_item_command_fn(destination,
+                                   cog_file,
+                                   None,
+                                   metadata=metadata)
+        create_collection_command_fn(destination, metadata)
 
     return nrcanlandcover
