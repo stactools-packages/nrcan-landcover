@@ -91,12 +91,6 @@ class StacTest(unittest.TestCase):
         assert "label:description" in item.properties
         assert "label:classes" in item.properties
 
-        assert "label:type" in asset.extra_fields
-        assert "label:tasks" in asset.extra_fields
-        assert "label:properties" in asset.extra_fields
-        assert "label:description" in asset.extra_fields
-        assert "label:classes" in asset.extra_fields
-
         item.validate()
 
     def test_create_collection(self):
@@ -145,10 +139,5 @@ class StacTest(unittest.TestCase):
             assert "label:type" in summaries
             assert "label:tasks" in summaries
             assert "label:classes" in summaries
-
-            assert "label:type" in item_asset
-            assert "label:tasks" in item_asset
-            assert "label:properties" in item_asset
-            assert "label:classes" in item_asset
 
             collection.validate()

@@ -215,16 +215,6 @@ def create_item(metadata: Dict[str, Any],
         cog_asset_projection.bbox = item_projection.bbox
         cog_asset_projection.transform = item_projection.transform
         cog_asset_projection.shape = item_projection.shape
-        # Label Extension (doesn't seem to handle Assets properly)
-        cog_asset.extra_fields["label:type"] = item_label.label_type
-        cog_asset.extra_fields["label:tasks"] = item_label.label_tasks
-        cog_asset.extra_fields[
-            "label:properties"] = item_label.label_properties
-        cog_asset.extra_fields[
-            "label:description"] = item_label.label_description
-        cog_asset.extra_fields["label:classes"] = [
-            item_label.label_classes[0].to_dict()
-        ]
     return item
 
 
@@ -348,13 +338,6 @@ def create_collection(
                 "values": [value],
                 "summary": summary
             } for value, summary in CLASSIFICATION_VALUES.items()],
-            "label:type":
-            collection_label.label_type[0],
-            "label:tasks":
-            collection_label.label_tasks,
-            "label:properties":
-            None,
-            "label:classes": [collection_label.label_classes[0].to_dict()],
             "proj:epsg":
             collection_proj.epsg[0]
         }),
