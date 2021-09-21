@@ -42,7 +42,6 @@ def download_create_cog(
         if access_url.endswith(".zip"):
             with ZipFile(tmp_file, 'r') as zip_ref:
                 zip_ref.extractall(tmp_dir)
-        print(os.listdir(tmp_dir))
         file_name = glob(f"{tmp_dir}/*.tif").pop()
         if retile:
             return create_retiled_cogs(file_name, output_directory,
