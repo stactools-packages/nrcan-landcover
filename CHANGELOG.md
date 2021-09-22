@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
+- `build-full-collection` will generate COGs, STAC Items, and a STAC Collection.
+- Tiling support for the `create-cog` command.
 - Label and Projection extensions on Asset, Collection, and Summary
 - Keywords on the Collection.
 - Thumbnail asset on Collection and Item.
