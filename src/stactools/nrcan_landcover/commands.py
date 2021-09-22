@@ -62,14 +62,18 @@ def create_nrcanlandcover_command(cli: click.Group) -> click.Command:
         "create-cog",
         short_help="Transform Geotiff to Cloud-Optimized Geotiff.",
     )
-    @click.option("-d",
-                  "--destination",
-                  required=True,
-                  help="The output directory for the COG")
-    @click.option("-s",
-                  "--source",
-                  required=False,
-                  help="Path to an input GeoTiff")
+    @click.option(
+        "-d",
+        "--destination",
+        required=True,
+        help="The output directory for the COG",
+    )
+    @click.option(
+        "-s",
+        "--source",
+        required=False,
+        help="Path to an input GeoTiff",
+    )
     @click.option(
         "-t",
         "--tile",
@@ -85,7 +89,7 @@ def create_nrcanlandcover_command(cli: click.Group) -> click.Command:
         Args:
             destination (str): Local directory to save output COGs
             source (str, optional): An input NRCAN Landcover GeoTiff
-            tile (bool, optional): Tile the tiff into many smaller files.
+            tile (bool, optional): Tile the tiff into many smaller files
         """
         create_cog_command_fn(destination, source, tile)
 
@@ -114,7 +118,12 @@ def create_nrcanlandcover_command(cli: click.Group) -> click.Command:
         required=True,
         help="The output directory for the STAC json",
     )
-    @click.option("-c", "--cog", required=True, help="COG href")
+    @click.option(
+        "-c",
+        "--cog",
+        required=True,
+        help="COG href",
+    )
     @click.option(
         "-e",
         "--extent-asset",
@@ -163,10 +172,12 @@ def create_nrcanlandcover_command(cli: click.Group) -> click.Command:
         "create-extent-asset",
         short_help="Create extent asset for the STAC Item",
     )
-    @click.option("-d",
-                  "--destination",
-                  required=True,
-                  help="The output directory for the extent asset")
+    @click.option(
+        "-d",
+        "--destination",
+        required=True,
+        help="The output directory for the extent asset",
+    )
     @click.option(
         "-m",
         "--metadata",
