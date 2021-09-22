@@ -149,8 +149,11 @@ def create_nrcanlandcover_command(cli: click.Group) -> click.Command:
         if extent_asset is None and os.path.exists(
                 os.path.join(destination, "extent.geojson")):
             extent_asset = os.path.join(destination, "extent.geojson")
-        item = stac.create_item(jsonld_metadata, destination, metadata, cog,
-                                extent_asset)
+        item = stac.create_item(jsonld_metadata,
+                                destination,
+                                metadata,
+                                cog,
+                                extent_asset_path=extent_asset)
         item.set_self_href(output_path)
         item.make_asset_hrefs_relative()
         item.save_object()

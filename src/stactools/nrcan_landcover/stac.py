@@ -25,6 +25,7 @@ from pystac.extensions.raster import (
     Sampling,
 )
 from shapely.geometry import Polygon
+from stactools.core.io import ReadHrefModifier
 
 from stactools.nrcan_landcover.constants import (
     CLASSIFICATION_VALUES,
@@ -48,6 +49,7 @@ def create_item(metadata: Dict[str, Any],
                 destination: str,
                 metadata_url: str = JSONLD_HREF,
                 cog_href: Optional[str] = None,
+                cog_href_modifier: Optional[ReadHrefModifier] = None,
                 extent_asset_path: Optional[str] = None,
                 thumbnail_url: str = THUMBNAIL_HREF) -> pystac.Item:
     """Creates a STAC item for a Natural Resources Canada Land Cover dataset.
@@ -69,6 +71,11 @@ def create_item(metadata: Dict[str, Any],
         cog_href_relative = os.path.relpath(cog_href, destination)
     if extent_asset_path and not uri_validator(extent_asset_path):
         extent_asset_path = os.path.relpath(extent_asset_path, destination)
+    if cog_href:
+        if cog_href_modifier:
+            cog_access_href = cog_href_modifier(cog_href)
+        else:
+            cog_access_href = cog_href
 
     title = metadata["tiff_metadata"]["dct:title"]
     description = metadata["description_metadata"]["dct:description"]
@@ -86,7 +93,7 @@ def create_item(metadata: Dict[str, Any],
     id = title.replace(" ", "-")
     geometry = metadata["geom_metadata"]
     if cog_href is not None:
-        with rasterio.open(cog_href) as dataset:
+        with rasterio.open(cog_access_href) as dataset:
             cog_bbox = list(dataset.bounds)
             cog_transform = list(dataset.transform)
             cog_shape = [dataset.height, dataset.width]
@@ -128,7 +135,7 @@ def create_item(metadata: Dict[str, Any],
     item_projection = ProjectionExtension.ext(item, add_if_missing=True)
     item_projection.epsg = LANDCOVER_EPSG
     if cog_href is not None:
-        with rasterio.open(cog_href) as dataset:
+        with rasterio.open(cog_access_href) as dataset:
             item_projection.bbox = cog_bbox
             item_projection.transform = cog_transform
             item_projection.shape = cog_shape
@@ -196,7 +203,7 @@ def create_item(metadata: Dict[str, Any],
             "summary": summary
         } for value, summary in CLASSIFICATION_VALUES.items()]
         cog_asset_file.values = mapping
-        with fsspec.open(cog_href) as file:
+        with fsspec.open(cog_access_href) as file:
             size = file.size
             if size is not None:
                 cog_asset_file.size = size
