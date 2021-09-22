@@ -27,8 +27,12 @@ stac nrcanlandcover create-cog -d "/path/to/directory" -s "/path/to/local.tif"
 nrcanlandcover create-extent-asset -d "/path/to/directory"
 # Create a STAC Item - creates /path/to/directory/local_cog.json
 stac nrcanlandcover create-item -d "/path/to/directory" -c "/path/to/local_cog.tif" -e "/path/to/extent.geojson"
-# STAC Collection
+# Create a STAC Collection
 stac nrcanlandcover create-collection -d "/path/to/directory"
+# Generate a full Collection with an Item and a COG Asset
+stac nrcanlandcover build-full-collection -d "/path/to/directory"
+# Generate a full Collection with tiled Items and many smaller COG Assets
+stac nrcanlandcover build-full-collection -t -d "/path/to/directory"
 ```
 
 ### As a python module
