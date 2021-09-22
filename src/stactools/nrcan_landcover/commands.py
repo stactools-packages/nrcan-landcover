@@ -213,26 +213,57 @@ def create_nrcanlandcover_command(cli: click.Group) -> click.Command:
         help="The output directory for the STAC Collection json",
     )
     @click.option(
+        "-s",
+        "--source",
+        required=False,
+        help="Path to an input GeoTiff",
+        default=None,
+    )
+    @click.option(
         "-m",
         "--metadata",
         help="The url to the metadata jsonld",
         default=JSONLD_HREF,
     )
-    def build_full_collection_command(destination: str, metadata: str) -> None:
+    @click.option(
+        "-t",
+        "--tile",
+        help="Tile the tiff into many smaller files.",
+        is_flag=True,
+        default=False,
+    )
+    def build_full_collection_command(destination: str, source: str,
+                                      metadata: str, tile: bool) -> None:
         """Creates a STAC collection with Items and Assets
 
         Args:
             destination (str): Directory used to store the collection json
+            source (str, optional): Path to a GeoTIF of the dataset
             metadata (str, optional): Path to a jsonld metadata file - provided by NRCan
+            tile (bool, optional): Tile the tiff into many smaller files
         Returns:
             Callable
         """
-        create_cog_command_fn(destination, None, tile=True)
+        # Create the COG from a GeoTIF.
+        # If a source TIF is not provided, it will be downloaded to /tmp.
+        # Enabling tiling will result in many smaller COGs.
+        create_cog_command_fn(
+            destination=destination,
+            source=source,
+            tile=tile,
+        )
+        # Create STAC Items for each COG.
         for cog_file in glob(f"{destination}/*.tif"):
-            create_item_command_fn(destination,
-                                   cog_file,
-                                   None,
-                                   metadata=metadata)
-        create_collection_command_fn(destination, metadata)
+            create_item_command_fn(
+                destination=destination,
+                cog=cog_file,
+                extent_asset=None,
+                metadata=metadata,
+            )
+        # Create a STAC Collection.
+        create_collection_command_fn(
+            destination=destination,
+            metadata=metadata,
+        )
 
     return nrcanlandcover
