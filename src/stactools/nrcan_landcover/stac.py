@@ -166,7 +166,7 @@ def create_item(metadata: Dict[str, Any],
         "thumbnail",
         pystac.Asset(
             href=thumbnail_url,
-            media_type=pystac.MediaType.JPEG,
+            media_type=pystac.MediaType.PNG,
             roles=["thumbnail"],
             title="Land cover of Canada thumbnail",
         ),
@@ -284,7 +284,7 @@ def create_collection(
         "thumbnail",
         pystac.Asset(
             href=thumbnail_url,
-            media_type=pystac.MediaType.JPEG,
+            media_type=pystac.MediaType.PNG,
             roles=["thumbnail"],
             title="Land cover of Canada thumbnail",
         ),
