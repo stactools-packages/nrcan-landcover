@@ -135,10 +135,9 @@ def create_item(metadata: Dict[str, Any],
     item_projection = ProjectionExtension.ext(item, add_if_missing=True)
     item_projection.epsg = LANDCOVER_EPSG
     if cog_href is not None:
-        with rasterio.open(cog_access_href) as dataset:
-            item_projection.bbox = cog_bbox
-            item_projection.transform = cog_transform
-            item_projection.shape = cog_shape
+        item_projection.bbox = cog_bbox
+        item_projection.transform = cog_transform
+        item_projection.shape = cog_shape
 
     item_label = LabelExtension.ext(item, add_if_missing=True)
     item_label.label_type = LabelType.RASTER
