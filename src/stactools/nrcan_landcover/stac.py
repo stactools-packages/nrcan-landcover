@@ -90,7 +90,10 @@ def create_item(metadata: Dict[str, Any],
     start_datetime = dataset_datetime
     end_datetime = end_datetime
 
-    id = title.replace(" ", "-")
+    if cog_href:
+        id = os.path.basename(cog_href).replace("_cog", "").replace(".tif", "")
+    else:
+        id = title.replace(" ", "-")
     geometry = metadata["geom_metadata"]
     if cog_href is not None:
         with rasterio.open(cog_access_href) as dataset:
