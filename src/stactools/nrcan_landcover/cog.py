@@ -123,14 +123,14 @@ def create_cog(
     raise_on_fail: bool = True,
     dry_run: bool = False,
 ) -> str:
-    """Create COG from a tif
+    """Create COG from a TIFF
 
     Args:
         input_path (str): Path to the Natural Resources Canada Land Cover data.
         output_path (str): The path to which the COG will be written.
         raise_on_fail (bool, optional): Whether to raise error on failure.
             Defaults to True.
-        dry_run (bool, optional): Run without downloading tif, creating COG,
+        dry_run (bool, optional): Run without downloading TIFF, creating COG,
             and writing COG. Defaults to False.
 
     Returns:
@@ -140,7 +140,7 @@ def create_cog(
     output = None
     try:
         if dry_run:
-            logger.info("Would have read TIF, created COG, and written COG")
+            logger.info("Would have read TIFF, created COG, and written COG")
         else:
             cmd = [
                 "gdal_translate",
