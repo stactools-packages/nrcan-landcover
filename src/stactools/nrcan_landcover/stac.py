@@ -24,12 +24,15 @@ from pystac.extensions.raster import (
     RasterExtension,
     Sampling,
 )
+from pystac.extensions.scientific import ScientificExtension
 from shapely.geometry import Polygon
 from stactools.core.io import ReadHrefModifier
 
 from stactools.nrcan_landcover.constants import (
+    CITATION,
     CLASSIFICATION_VALUES,
     DESCRIPTION,
+    DOI,
     JSONLD_HREF,
     KEYWORDS,
     LANDCOVER_EPSG,
@@ -154,6 +157,10 @@ def create_item(metadata: Dict[str, Any],
         # When it is fixed, this should be None, not the empty string.
         LabelClasses.create(list(CLASSIFICATION_VALUES.values()), "")
     ]
+
+    item_sci = ScientificExtension.ext(item, add_if_missing=True)
+    item_sci.doi = DOI
+    item_sci.citation = CITATION
 
     item.add_asset(
         "metadata",
@@ -308,6 +315,10 @@ def create_collection(
     collection_proj = ProjectionExtension.summaries(collection,
                                                     add_if_missing=True)
     collection_proj.epsg = [LANDCOVER_EPSG]
+
+    collection_sci = ScientificExtension.ext(collection, add_if_missing=True)
+    collection_sci.doi = DOI
+    collection_sci.citation = CITATION
 
     collection_item_asset = ItemAssetsExtension.ext(collection,
                                                     add_if_missing=True)

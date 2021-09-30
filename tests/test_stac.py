@@ -91,6 +91,10 @@ class StacTest(unittest.TestCase):
         assert "label:description" in item.properties
         assert "label:classes" in item.properties
 
+        # Scientific Extension
+        assert "sci:doi" in item.properties
+        assert "sci:citation" in item.properties
+
         item.validate()
 
     def test_create_collection(self):
@@ -139,5 +143,9 @@ class StacTest(unittest.TestCase):
             assert "label:type" in summaries
             assert "label:tasks" in summaries
             assert "label:classes" in summaries
+
+            # Scientific Extension
+            assert "sci:doi" in collection.extra_fields
+            assert "sci:citation" in collection.extra_fields
 
             collection.validate()
