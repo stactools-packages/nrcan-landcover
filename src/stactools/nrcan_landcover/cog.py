@@ -104,6 +104,7 @@ def create_retiled_cogs(
                         os.path.basename(f).replace(".tif", "") + "_cog.tif")
                     with rasterio.open(input_file, "r") as dataset:
                         contains_data = dataset.read().any()
+                    # Exclude empty files
                     if contains_data:
                         create_cog(input_file, output_file, raise_on_fail,
                                    dry_run)
