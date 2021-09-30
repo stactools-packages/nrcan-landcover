@@ -35,6 +35,7 @@ from stactools.nrcan_landcover.constants import (
     DOI,
     JSONLD_HREF,
     KEYWORDS,
+    LANDCOVER_CRS_WKT,
     LANDCOVER_EPSG,
     LANDCOVER_ID,
     LANDCOVER_TITLE,
@@ -140,6 +141,7 @@ def create_item(metadata: Dict[str, Any],
 
     item_projection = ProjectionExtension.ext(item, add_if_missing=True)
     item_projection.epsg = LANDCOVER_EPSG
+    item_projection.wkt2 = LANDCOVER_CRS_WKT
     if cog_href is not None:
         item_projection.bbox = cog_bbox
         item_projection.transform = cog_transform
@@ -228,6 +230,7 @@ def create_item(metadata: Dict[str, Any],
         cog_asset_projection = ProjectionExtension.ext(cog_asset,
                                                        add_if_missing=True)
         cog_asset_projection.epsg = item_projection.epsg
+        cog_asset_projection.wkt2 = item_projection.wkt2
         cog_asset_projection.bbox = item_projection.bbox
         cog_asset_projection.transform = item_projection.transform
         cog_asset_projection.shape = item_projection.shape
