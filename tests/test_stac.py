@@ -54,7 +54,6 @@ class StacTest(unittest.TestCase):
         asset = item.assets["landcover"]
 
         assert "metadata" in item.assets
-        assert "thumbnail" in item.assets
         assert "data" in asset.roles
 
         # Projection Extension

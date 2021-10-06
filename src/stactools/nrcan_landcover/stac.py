@@ -173,15 +173,16 @@ def create_item(metadata: Dict[str, Any],
             title="Land cover of Canada metadata",
         ),
     )
-    item.add_asset(
-        "thumbnail",
-        pystac.Asset(
-            href=thumbnail_url,
-            media_type=pystac.MediaType.PNG,
-            roles=["thumbnail"],
-            title="Land cover of Canada thumbnail",
-        ),
-    )
+    if not tiled:
+        item.add_asset(
+            "thumbnail",
+            pystac.Asset(
+                href=thumbnail_url,
+                media_type=pystac.MediaType.PNG,
+                roles=["thumbnail"],
+                title="Land cover of Canada thumbnail",
+            ),
+        )
     if extent_asset_path:
         item.add_asset(
             "extent",
