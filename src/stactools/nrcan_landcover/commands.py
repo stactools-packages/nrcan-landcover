@@ -184,23 +184,35 @@ def create_nrcanlandcover_command(cli: click.Group) -> click.Command:
         help="The url to the metadata description.",
         default=JSONLD_HREF,
     )
-    def create_extent_asset_command(destination: str, metadata: str) -> None:
+    @click.option(
+        "-c",
+        "--cog",
+        required=False,
+        help="COG href",
+    )
+    def create_extent_asset_command(destination: str, metadata: str,
+                                    cog: Optional[str]) -> None:
         """Generate a GeoJSON of the extent of the STAC Item.
 
         Args:
             destination (str): Local directory to save output COGs
             metadata (str): URL to the metadata
         """
-        create_extent_asset_command_fn(destination, metadata)
+        create_extent_asset_command_fn(destination, metadata, cog)
 
-    def create_extent_asset_command_fn(destination: str,
-                                       metadata: str) -> None:
+    def create_extent_asset_command_fn(destination: str, metadata: str,
+                                       cog: Optional[str]) -> None:
         if not os.path.isdir(destination):
             raise IOError(f'Destination folder "{destination}" not found')
 
         jsonld_metadata = utils.get_metadata(metadata)
-        output_path = os.path.join(destination, "extent.geojson")
-        extent.create_extent_asset(jsonld_metadata, output_path)
+        if cog is not None:
+            file_name = os.path.basename(cog).replace(".tif",
+                                                      "_extent.geojson")
+        else:
+            file_name = "extent.geojson"
+        output_path = os.path.join(destination, file_name)
+        extent.create_extent_asset(jsonld_metadata, output_path, cog)
 
     @nrcanlandcover.command(
         "build-full-collection",
@@ -244,8 +256,8 @@ def create_nrcanlandcover_command(cli: click.Group) -> click.Command:
         Returns:
             Callable
         """
-        # Create the COG from a GeoTIF.
-        # If a source TIF is not provided, it will be downloaded to /tmp.
+        # Create the COG from a GeoTIFF.
+        # If a source TIFF is not provided, it will be downloaded to /tmp.
         # Enabling tiling will result in many smaller COGs.
         create_cog_command_fn(
             destination=destination,
@@ -254,10 +266,19 @@ def create_nrcanlandcover_command(cli: click.Group) -> click.Command:
         )
         # Create STAC Items for each COG.
         for cog_file in glob(f"{destination}/*.tif"):
+            create_extent_asset_command_fn(
+                destination=destination,
+                cog=cog_file,
+                metadata=metadata,
+            )
+            extent_file = os.path.join(
+                destination,
+                os.path.basename(cog_file).replace(".tif", "_extent.geojson"),
+            )
             create_item_command_fn(
                 destination=destination,
                 cog=cog_file,
-                extent_asset=None,
+                extent_asset=extent_file,
                 metadata=metadata,
             )
         # Create a STAC Collection.

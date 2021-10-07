@@ -25,7 +25,8 @@ from pystac.extensions.raster import (
     Sampling,
 )
 from pystac.extensions.scientific import ScientificExtension
-from shapely.geometry import Polygon
+from shapely.geometry import Polygon, box
+from shapely.geometry import mapping as geojson_mapping
 from stactools.core.io import ReadHrefModifier
 
 from stactools.nrcan_landcover.constants import (
@@ -33,6 +34,7 @@ from stactools.nrcan_landcover.constants import (
     CLASSIFICATION_VALUES,
     DESCRIPTION,
     DOI,
+    FULL_DATASET_BBOX,
     JSONLD_HREF,
     KEYWORDS,
     LANDCOVER_CRS_WKT,
@@ -47,6 +49,48 @@ from stactools.nrcan_landcover.constants import (
 from stactools.nrcan_landcover.utils import uri_validator
 
 logger = logging.getLogger(__name__)
+
+
+def get_cog_geom(href: Optional[str], metadata: Dict[str,
+                                                     Any]) -> Dict[str, Any]:
+    if href is not None:
+        with rasterio.open(href) as dataset:
+            cog_bbox = list(dataset.bounds)
+            cog_transform = list(dataset.transform)
+            cog_shape = [dataset.height, dataset.width]
+
+            # If cog is the full dataset, use the bbox from the metadata
+            if cog_bbox == FULL_DATASET_BBOX:
+                tiled = False
+                geometry = metadata["geom_metadata"]
+                bbox = list(Polygon(geometry.get("coordinates")[0]).bounds)
+            else:
+                tiled = True
+                transformer = Proj.from_crs(CRS.from_epsg(LANDCOVER_EPSG),
+                                            CRS.from_epsg(4326),
+                                            always_xy=True)
+                bbox = list(
+                    transformer.transform_bounds(dataset.bounds.left,
+                                                 dataset.bounds.bottom,
+                                                 dataset.bounds.right,
+                                                 dataset.bounds.top))
+                geometry = geojson_mapping(box(*bbox, ccw=True))
+    else:
+        # Use values from the metadata
+        geometry = metadata["geom_metadata"]
+        bbox = list(Polygon(geometry.get("coordinates")[0]).bounds)
+        tiled = False
+        cog_bbox = []
+        cog_transform = []
+        cog_shape = []
+    return {
+        'bbox': bbox,
+        'cog_bbox': cog_bbox,
+        'geometry': geometry,
+        'tiled': tiled,
+        'transform': cog_transform,
+        'shape': cog_shape,
+    }
 
 
 def create_item(metadata: Dict[str, Any],
@@ -75,11 +119,9 @@ def create_item(metadata: Dict[str, Any],
         cog_href_relative = os.path.relpath(cog_href, destination)
     if extent_asset_path and not uri_validator(extent_asset_path):
         extent_asset_path = os.path.relpath(extent_asset_path, destination)
-    if cog_href:
-        if cog_href_modifier:
-            cog_access_href = cog_href_modifier(cog_href)
-        else:
-            cog_access_href = cog_href
+    cog_access_href = cog_href  # Make sure cog_access_href exists, even if None
+    if cog_href and cog_href_modifier:
+        cog_access_href = cog_href_modifier(cog_href)
 
     title = metadata["tiff_metadata"]["dct:title"]
     description = metadata["description_metadata"]["dct:description"]
@@ -94,31 +136,14 @@ def create_item(metadata: Dict[str, Any],
     start_datetime = dataset_datetime
     end_datetime = end_datetime
 
-    if cog_href:
+    if cog_href is not None:
         id = os.path.basename(cog_href).replace("_cog", "").replace(".tif", "")
     else:
         id = title.replace(" ", "-")
-    geometry = metadata["geom_metadata"]
-    if cog_href is not None:
-        with rasterio.open(cog_access_href) as dataset:
-            cog_bbox = list(dataset.bounds)
-            cog_transform = list(dataset.transform)
-            cog_shape = [dataset.height, dataset.width]
-
-            # If cog is the full dataset, use the bbox from the metadata
-            if cog_bbox == [-2600030.0, -885090.0, 3100000.0, 3914940.0]:
-                bbox = list(Polygon(geometry.get("coordinates")[0]).bounds)
-            else:
-                transformer = Proj.from_crs(CRS.from_epsg(LANDCOVER_EPSG),
-                                            CRS.from_epsg(4326),
-                                            always_xy=True)
-                bbox = list(
-                    transformer.transform_bounds(dataset.bounds.left,
-                                                 dataset.bounds.bottom,
-                                                 dataset.bounds.right,
-                                                 dataset.bounds.top))
-    else:
-        bbox = list(Polygon(geometry.get("coordinates")[0]).bounds)
+    cog_geom = get_cog_geom(cog_access_href, metadata)
+    bbox = cog_geom["bbox"]
+    geometry = cog_geom["geometry"]
+    tiled = cog_geom["tiled"]
 
     properties = {
         "title": title,
@@ -143,9 +168,9 @@ def create_item(metadata: Dict[str, Any],
     item_projection.epsg = LANDCOVER_EPSG
     item_projection.wkt2 = LANDCOVER_CRS_WKT
     if cog_href is not None:
-        item_projection.bbox = cog_bbox
-        item_projection.transform = cog_transform
-        item_projection.shape = cog_shape
+        item_projection.bbox = cog_geom["cog_bbox"]
+        item_projection.transform = cog_geom["transform"]
+        item_projection.shape = cog_geom["shape"]
 
     item_label = LabelExtension.ext(item, add_if_missing=True)
     item_label.label_type = LabelType.RASTER
