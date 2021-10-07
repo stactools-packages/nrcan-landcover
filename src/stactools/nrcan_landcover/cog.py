@@ -26,7 +26,7 @@ def download_create_cog(
     dry_run: bool = False,
 ) -> str:
     if dry_run:
-        logger.info("Would have downloaded TIF, created COG, and written COG")
+        logger.info("Would have downloaded TIFF, created COG, and written COG")
         return output_directory
 
     metadata = get_metadata(metadata_url)
@@ -35,11 +35,16 @@ def download_create_cog(
         # Extract filename from url
         tmp_file = os.path.join(tmp_dir, access_url.split('/').pop())
 
+        logger.info("Downloading TIFF")
+        logger.debug(f"access_url: {access_url}")
         resp = requests.get(access_url)
 
         with open(tmp_file, 'wb') as f:
+            logger.info("Writing TIFF")
+            logger.debug(f"tmp_file: {tmp_file}")
             f.write(resp.content)
         if access_url.endswith(".zip"):
+            logger.info("Unzipping TIFF")
             with ZipFile(tmp_file, 'r') as zip_ref:
                 zip_ref.extractall(tmp_dir)
         file_name = glob(f"{tmp_dir}/*.tif").pop()
@@ -76,9 +81,12 @@ def create_retiled_cogs(
     try:
         if dry_run:
             logger.info(
-                "Would have split TIF into tiles, created COGs, and written COGs"
+                "Would have split TIFF into tiles, created COGs, and written COGs"
             )
         else:
+            logger.info("Retiling TIFF")
+            logger.debug(f"input_path: {input_path}")
+            logger.debug(f"output_directory: {output_directory}")
             with TemporaryDirectory() as tmp_dir:
                 cmd = [
                     "gdal_retile.py",
@@ -106,8 +114,11 @@ def create_retiled_cogs(
                         contains_data = dataset.read().any()
                     # Exclude empty files
                     if contains_data:
+                        logger.debug(f"Tile contains data: {input_file}")
                         create_cog(input_file, output_file, raise_on_fail,
                                    dry_run)
+                    else:
+                        logger.debug(f"Ignoring empty tile: {input_file}")
 
     except Exception:
         logger.error("Failed to process {}".format(input_path))
@@ -143,6 +154,9 @@ def create_cog(
         if dry_run:
             logger.info("Would have read TIFF, created COG, and written COG")
         else:
+            logger.info("Converting TIFF to COG")
+            logger.debug(f"input_path: {input_path}")
+            logger.debug(f"output_path: {output_path}")
             cmd = [
                 "gdal_translate",
                 "-of",
