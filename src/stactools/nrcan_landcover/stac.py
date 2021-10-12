@@ -98,7 +98,7 @@ def create_item(metadata: Dict[str, Any],
                 metadata_url: str = JSONLD_HREF,
                 cog_href: Optional[str] = None,
                 cog_href_modifier: Optional[ReadHrefModifier] = None,
-                extent_asset_path: Optional[str] = None,
+                extent_asset_href: Optional[str] = None,
                 thumbnail_url: str = THUMBNAIL_HREF) -> pystac.Item:
     """Creates a STAC item for a Natural Resources Canada Land Cover dataset.
 
@@ -107,7 +107,7 @@ def create_item(metadata: Dict[str, Any],
         destination (str): Directory where the Item will be stored.
         metadata_url (str, optional): Path to provider metadata.
         cog_href (str, optional): Path to COG asset.
-        extent_asset_path (str, optional): Path to extent GeoJSON file.
+        extent_asset_href (str, optional): Path to extent GeoJSON file.
         thumbnail_url (str, optional): URL for thumbnail image.
 
     Returns:
@@ -117,8 +117,8 @@ def create_item(metadata: Dict[str, Any],
     cog_href_relative = None
     if cog_href and not uri_validator(cog_href):
         cog_href_relative = os.path.relpath(cog_href, destination)
-    if extent_asset_path and not uri_validator(extent_asset_path):
-        extent_asset_path = os.path.relpath(extent_asset_path, destination)
+    if extent_asset_href and not uri_validator(extent_asset_href):
+        extent_asset_href = os.path.relpath(extent_asset_href, destination)
     cog_access_href = cog_href  # Make sure cog_access_href exists, even if None
     if cog_href and cog_href_modifier:
         cog_access_href = cog_href_modifier(cog_href)
@@ -208,11 +208,11 @@ def create_item(metadata: Dict[str, Any],
                 title="Land cover of Canada thumbnail",
             ),
         )
-    if extent_asset_path:
+    if extent_asset_href:
         item.add_asset(
             "extent",
             pystac.Asset(
-                href=extent_asset_path,
+                href=extent_asset_href,
                 media_type=pystac.MediaType.GEOJSON,
                 roles=["extent"],
                 title="Land cover of Canada extent",

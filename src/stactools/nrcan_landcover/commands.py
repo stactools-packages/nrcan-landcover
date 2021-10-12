@@ -162,7 +162,7 @@ def create_nrcanlandcover_command(cli: click.Group) -> click.Command:
                                 destination,
                                 metadata,
                                 cog,
-                                extent_asset_path=extent_asset)
+                                extent_asset_href=extent_asset)
         item.set_self_href(output_path)
         item.make_asset_hrefs_relative()
         item.save_object()
