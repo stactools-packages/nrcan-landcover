@@ -38,6 +38,8 @@ NRCAN_FTP = "http://ftp.maps.canada.ca/pub/nrcan_rncan/Land-cover_Couverture-du-
 THUMBNAIL_HREF = "https://atlas.gc.ca/lcct/images/M.png"
 
 KEYWORDS = [
+    "NRCAN",
+    "RNCAN",
     "Land Cover",
     "Remote Sensing",
     "Landsat",
