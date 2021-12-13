@@ -25,6 +25,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
+- Colormap must be applied before `gdal_translate` is called. This ensures that the correct settings are used e.g. NEAREST vs CUBIC for generating overviews.[#22](https://github.com/stactools-packages/nrcan-landcover/pull/22)
 - create-item and create-collection shouldn't call save on the STAC object.
 - Metadata URL on STAC Item.
 
