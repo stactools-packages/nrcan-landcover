@@ -12,6 +12,7 @@ import requests
 from stactools.nrcan_landcover.constants import (
     COLOUR_MAP,
     JSONLD_HREF,
+    NO_DATA_VALUE,
     TILING_PIXEL_SIZE,
 )
 from stactools.nrcan_landcover.utils import get_metadata
@@ -186,7 +187,7 @@ def create_cog(
                     "-co",
                     "OVERVIEWS=IGNORE_EXISTING",
                     "-a_nodata",
-                    "0",
+                    str(NO_DATA_VALUE),
                     tmp_path,
                     output_path,
                 ]
