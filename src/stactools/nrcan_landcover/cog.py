@@ -1,6 +1,7 @@
 import logging
 import os
 from glob import glob
+from shutil import copyfile
 from subprocess import CalledProcessError, check_output
 from tempfile import TemporaryDirectory
 from zipfile import ZipFile
@@ -149,50 +150,59 @@ def create_cog(
         str: The path to the output COG.
     """
 
-    output = None
-    try:
-        if dry_run:
-            logger.info("Would have read TIFF, created COG, and written COG")
-        else:
-            logger.info("Converting TIFF to COG")
-            logger.debug(f"input_path: {input_path}")
-            logger.debug(f"output_path: {output_path}")
-            cmd = [
-                "gdal_translate",
-                "-of",
-                "COG",
-                "-co",
-                "NUM_THREADS=ALL_CPUS",
-                "-co",
-                "BLOCKSIZE=512",
-                "-co",
-                "COMPRESS=DEFLATE",
-                "-co",
-                "LEVEL=9",
-                "-co",
-                "PREDICTOR=YES",
-                "-co",
-                "OVERVIEWS=IGNORE_EXISTING",
-                "-a_nodata",
-                "0",
-                input_path,
-                output_path,
-            ]
+    with TemporaryDirectory() as tmp_dir:
+        # The colormap must be applied before processing.
+        # This ensures that the correct defaults are used.
+        # e.g. NEAREST rather than CUBIC for calculating overviews.
+        # So we copy the input file to a temp dir and apply it before
+        # running gdal_translate.
+        tmp_path = os.path.join(tmp_dir, os.path.basename(input_path))
+        copyfile(input_path, tmp_path)
+        with rasterio.open(tmp_path, "r+") as dataset:
+            dataset.write_colormap(1, COLOUR_MAP)
+        output = None
+        try:
+            if dry_run:
+                logger.info(
+                    "Would have read TIFF, created COG, and written COG")
+            else:
+                logger.info("Converting TIFF to COG")
+                logger.debug(f"input_path: {input_path}")
+                logger.debug(f"output_path: {output_path}")
+                cmd = [
+                    "gdal_translate",
+                    "-of",
+                    "COG",
+                    "-co",
+                    "NUM_THREADS=ALL_CPUS",
+                    "-co",
+                    "BLOCKSIZE=512",
+                    "-co",
+                    "COMPRESS=DEFLATE",
+                    "-co",
+                    "LEVEL=9",
+                    "-co",
+                    "PREDICTOR=YES",
+                    "-co",
+                    "OVERVIEWS=IGNORE_EXISTING",
+                    "-a_nodata",
+                    "0",
+                    tmp_path,
+                    output_path,
+                ]
 
-            try:
-                output = check_output(cmd)
-            except CalledProcessError as e:
-                output = e.output
+                try:
+                    output = check_output(cmd)
+                except CalledProcessError as e:
+                    output = e.output
+                    raise
+                finally:
+                    logger.info(f"output: {str(output)}")
+
+        except Exception:
+            logger.error("Failed to process {}".format(output_path))
+
+            if raise_on_fail:
                 raise
-            finally:
-                logger.info(f"output: {str(output)}")
-            with rasterio.open(output_path, "r+") as dataset:
-                dataset.write_colormap(1, COLOUR_MAP)
-
-    except Exception:
-        logger.error("Failed to process {}".format(output_path))
-
-        if raise_on_fail:
-            raise
 
     return output_path
