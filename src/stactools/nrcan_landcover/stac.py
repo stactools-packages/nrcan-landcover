@@ -43,6 +43,7 @@ from stactools.nrcan_landcover.constants import (
     LANDCOVER_TITLE,
     LICENSE,
     LICENSE_LINK,
+    NO_DATA_VALUE,
     NRCAN_PROVIDER,
     THUMBNAIL_HREF,
 )
@@ -247,7 +248,7 @@ def create_item(metadata: Dict[str, Any],
         # Raster Extension
         cog_asset_raster = RasterExtension.ext(cog_asset, add_if_missing=True)
         cog_asset_raster.bands = [
-            RasterBand.create(nodata=0,
+            RasterBand.create(nodata=NO_DATA_VALUE,
                               sampling=Sampling.AREA,
                               data_type=DataType.UINT8,
                               spatial_resolution=30)
@@ -378,7 +379,7 @@ def create_collection(
             "title":
             "Land cover of Canada COG",
             "raster:bands": [
-                RasterBand.create(nodata=0,
+                RasterBand.create(nodata=NO_DATA_VALUE,
                                   sampling=Sampling.AREA,
                                   data_type=DataType.UINT8,
                                   spatial_resolution=30).to_dict()
